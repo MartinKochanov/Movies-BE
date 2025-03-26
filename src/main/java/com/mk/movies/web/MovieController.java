@@ -1,5 +1,8 @@
 package com.mk.movies.web;
 
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
@@ -9,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,7 @@ public class MovieController {
     @PostMapping
     public ResponseEntity<MovieDetailsView> create(@RequestBody @Valid MovieRequest movie) {
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(CREATED)
             .body(movieService.create(movie));
     }
 
@@ -47,7 +49,7 @@ public class MovieController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<MovieDetailsView> update(@PathVariable String id,
-        @RequestBody MovieUpdateRequest movie) {
+        @RequestBody @Valid MovieUpdateRequest movie) {
         return ResponseEntity.ok(movieService.updateMovie(id, movie));
     }
 
@@ -55,7 +57,7 @@ public class MovieController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         movieService.deleteMovie(id);
         return ResponseEntity
-            .status(HttpStatus.NO_CONTENT)
+            .status(NO_CONTENT)
             .build();
     }
 }

@@ -1,19 +1,19 @@
-package com.mk.movies.domain.movie.mappers;
+package com.mk.movies.infrastructure.mappers;
 
 import com.mk.movies.domain.movie.document.Movie;
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
-import org.bson.types.ObjectId;
+import com.mk.movies.infrastructure.util.ObjectIdMapperUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(componentModel = "spring",
+    uses = ObjectIdMapperUtil.class,
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
     nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface MovieMapper {
@@ -28,9 +28,4 @@ public interface MovieMapper {
     Movie toDocument(MovieRequest dto);
 
     void updateDocument(MovieUpdateRequest request, @MappingTarget Movie movie);
-
-    @Named("objectIdToString")
-    static String objectIdToString(ObjectId id) {
-        return id != null ? id.toHexString() : null;
-    }
 }

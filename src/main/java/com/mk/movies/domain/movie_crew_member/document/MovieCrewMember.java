@@ -20,11 +20,5 @@ public class MovieCrewMember {
     private ObjectId id;
     private String firstName;
     private String lastName;
-    private String role;
     private String imageUrl;
-    private String biography;
-    private LocalDate birthDate;
-    private String birthPlace;
-    private LocalDate deathDate;
-    private String deathPlace;
 }

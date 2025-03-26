@@ -7,7 +7,7 @@ import com.mk.movies.domain.movie.dto.MovieDetailsView;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
-import com.mk.movies.domain.movie.mappers.MovieMapper;
+import com.mk.movies.infrastructure.mappers.MovieMapper;
 import com.mk.movies.domain.movie.repository.MovieRepository;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
