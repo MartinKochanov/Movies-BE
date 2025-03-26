@@ -1,0 +1,8 @@
+spring:
+    application:
+        name: movies
+    data:
+        mongodb:
+            uri: mongodb+srv://root:lape3505@cluster0.colic.mongodb.net/myMovieDB?retryWrites=true&w=majority
+            database: myMovieDB
+            auto-index-creation: true

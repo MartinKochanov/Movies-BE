@@ -1,0 +1,30 @@
+Movie                 | Actor                  | Genre		           | BasedOn             |
+----------------------|------------------------|---------------------|---------------------|
+                      |                        | Action .....        | Book
+String title          |                        |                     | TrueStory
+List<Genre> genres    |                        |                     | OriginalWork
+Duration duration     |                        |                     | Remake
+String plot           |                        |                     |
+String imageUrl       |                        |                     |
+String trailerUrl     |                        |                     |
+String filmStudio     |                        |                     |
+List<Actor> cast      |                        |                     |
+LocalDate year        |                        |                     |
+Boolean series = false|
+String directedBy     |
+BasedOn basedOn       |
+String producer       |
+List<String> writers  |
+                      |
+                      |
+                      |
+                      |
+                      |
+                      |
+                      |
+                      |
+                      |
+                      |
+                      |
+                      
+ 

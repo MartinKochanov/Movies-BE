@@ -1,0 +1,30 @@
+package com.mk.movies.domain.movie_crew_member.document;
+
+import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "MovieCrewMembers")
+public class MovieCrewMember {
+
+    @Id
+    private ObjectId id;
+    private String firstName;
+    private String lastName;
+    private String role;
+    private String imageUrl;
+    private String biography;
+    private LocalDate birthDate;
+    private String birthPlace;
+    private LocalDate deathDate;
+    private String deathPlace;
+}
