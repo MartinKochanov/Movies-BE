@@ -11,9 +11,11 @@ public record MovieRequest(
     @NotBlank(message = "Title ìs required")
     String title,
 
+    @NotNull(message = "Duration is required")
     @Min(value = 1, message = "Duration must be at least 1 minute")
     Integer duration,
 
+    @NotNull(message = "Release year is required")
     @Min(value = 1900, message = "Release year must be a valid year")
     Integer releaseYear,
 
@@ -31,6 +33,7 @@ public record MovieRequest(
     String filmStudio,
 
     @NotNull(message = "Cast is required")
+    @Size(min = 1, message = "At least one cast member must be provided")
     List<String> castIds,
 
     Boolean series,
@@ -44,6 +47,7 @@ public record MovieRequest(
     String producerId,
 
     @NotNull(message = "Writer is required")
+    @Size(min = 1, message = "At least one writer must be provided")
     List<String> writersIds
 ) {
 
