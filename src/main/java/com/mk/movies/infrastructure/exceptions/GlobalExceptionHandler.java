@@ -55,5 +55,17 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    @ExceptionHandler(MinioInitializationException.class)
+    public ProblemDetail handleMinioInitializationException(MinioInitializationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()
+        );
+        problemDetail.setTitle("MinIO Initialization Error");
+        problemDetail.setType(URI.create("https://api.mk.movies/errors/minio-initialization"));
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+        return problemDetail;
+    }
+
 }
 
