@@ -2,6 +2,7 @@ package com.mk.movies.domain.movie.dto;
 
 import com.mk.movies.domain.movie.enums.Genre;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 public record MovieUpdateRequest(
     String title,
@@ -12,12 +13,12 @@ public record MovieUpdateRequest(
     String imageUrl,
     String trailerUrl,
     String filmStudio,
-    List<String> castIds,
-    Boolean series,
-    String directedById,
     String basedOn,
-    String producerId,
-    List<String> writersIds
+    Boolean series,
+    List<ObjectId> castIds,
+    List<ObjectId> directedByIds,
+    List<ObjectId> producersIds,
+    List<ObjectId> writersIds
 ) {
 
 }

@@ -1,6 +1,6 @@
 package com.mk.movies.domain.movie.dto;
 
-import com.mk.movies.domain.movie_crew_member.document.MovieCrewMember;
+import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberView;
 import java.util.List;
 
 public record MovieDetailsView(
@@ -13,12 +13,12 @@ public record MovieDetailsView(
     String imageUrl,
     String trailerUrl,
     String filmStudio,
-    List<String> castIds,
-    Boolean series,
-    String directedById,
     String basedOn,
-    String producerId,
-    List<String> writersIds
+    Boolean series,
+    List<MovieCrewMemberView> cast,
+    List<MovieCrewMemberView> directedBy,
+    List<MovieCrewMemberView> producers,
+    List<MovieCrewMemberView> writers
 ) {
 
 }

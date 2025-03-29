@@ -7,9 +7,9 @@ import com.mk.movies.domain.movie.dto.MovieDetailsView;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
-import com.mk.movies.infrastructure.mappers.MovieMapper;
 import com.mk.movies.domain.movie.repository.MovieRepository;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
+import com.mk.movies.infrastructure.mappers.MovieMapper;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -25,7 +25,8 @@ public class MovieService {
 
     public MovieDetailsView create(MovieRequest dto) {
         var movie = movieMapper.toDocument(dto);
-        return movieMapper.toDetailsView(movieRepository.save(movie));
+        movieRepository.save(movie);
+        return getMovieDetailsViewById(movie.getId());
     }
 
     public Page<MovieSimpleView> getAllMovies(Pageable pageable) {
@@ -34,7 +35,7 @@ public class MovieService {
 
     public MovieDetailsView getMovieById(String id) {
         validateObjectId(id);
-        return movieMapper.toDetailsView(getMovie(new ObjectId(id)));
+        return getMovieDetailsViewById(new ObjectId(id));
     }
 
     public MovieDetailsView updateMovie(String id, MovieUpdateRequest request) {
@@ -45,7 +46,7 @@ public class MovieService {
 
         movieRepository.save(movie);
 
-        return movieMapper.toDetailsView(movie);
+        return getMovieDetailsViewById(movie.getId());
     }
 
     public void deleteMovie(String id) {
@@ -63,6 +64,11 @@ public class MovieService {
 
     private Movie getMovie(ObjectId id) {
         return movieRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + id + " not found"));
+    }
+
+    private MovieDetailsView getMovieDetailsViewById(ObjectId id) {
+        return movieRepository.findMovieDetailsViewById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + id + " not found"));
     }
 }
