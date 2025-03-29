@@ -1,7 +1,6 @@
 package com.mk.movies.infrastructure.mappers;
 
 import com.mk.movies.domain.movie.document.Movie;
-import com.mk.movies.domain.movie.dto.MovieDetailsView;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
@@ -17,9 +16,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
     nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface MovieMapper {
-
-    @Mapping(target = "id", source = "id", qualifiedByName = "objectIdToString")
-    MovieDetailsView toDetailsView(Movie movie);
 
     @Mapping(target = "id", source = "id", qualifiedByName = "objectIdToString")
     MovieSimpleView toSimpleView(Movie movie);

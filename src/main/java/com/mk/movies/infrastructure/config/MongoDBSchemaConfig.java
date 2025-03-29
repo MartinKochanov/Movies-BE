@@ -31,7 +31,7 @@ public class MongoDBSchemaConfig {
         Document moviesJsonSchema = new Document("$jsonSchema",
             new Document("bsonType", "object")
                 .append("required", List.of("_id", "title", "duration", "releaseYear", "genres",
-                    "plot", "filmStudio", "castIds", "directedById", "producerId", "writersIds"))
+                    "plot", "filmStudio", "castIds", "directedByIds", "producersIds", "writersIds"))
                 .append("properties", new Document()
                     .append("_id", new Document("bsonType", "objectId").append("description",
                         "Must be a valid ObjectId"))
@@ -58,17 +58,21 @@ public class MongoDBSchemaConfig {
                     .append("filmStudio", new Document("bsonType", "string")
                         .append("description", "Film studio is required"))
                     .append("castIds", new Document("bsonType", "array")
-                        .append("items", new Document("bsonType", "string"))
+                        .append("items", new Document("bsonType", "objectId"))
                         .append("minItems", 1)
                         .append("description", "At least one cast member is required"))
                     .append("series", new Document("bsonType", "bool"))
-                    .append("directedById", new Document("bsonType", "string")
-                        .append("description", "Director ID is required"))
+                    .append("directedByIds", new Document("bsonType", "array")
+                        .append("items", new Document("bsonType", "objectId"))
+                        .append("minItems", 1)
+                        .append("description", "At least one director must be provided"))
                     .append("basedOn", new Document("bsonType", "string"))
-                    .append("producerId", new Document("bsonType", "string")
-                        .append("description", "Producer ID is required"))
+                    .append("producersIds", new Document("bsonType", "array")
+                        .append("items", new Document("bsonType", "objectId"))
+                        .append("minItems", 1)
+                        .append("description", "At least one producer must be provided"))
                     .append("writersIds", new Document("bsonType", "array")
-                        .append("items", new Document("bsonType", "string"))
+                        .append("items", new Document("bsonType", "objectId"))
                         .append("minItems", 1)
                         .append("description", "At least one writer is required"))
                 )
@@ -81,6 +85,7 @@ public class MongoDBSchemaConfig {
 
         log.info("Schema validation applied to Movies collection");
     }
+
 
     private void applyMovieCrewMemberSchema(MongoDatabase database) {
         Document movieCrewMemberJsonSchema = new Document("$jsonSchema",

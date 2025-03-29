@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import org.bson.types.ObjectId;
 
 public record MovieRequest(
     @NotBlank(message = "Title ìs required")
@@ -34,21 +35,23 @@ public record MovieRequest(
 
     @NotNull(message = "Cast is required")
     @Size(min = 1, message = "At least one cast member must be provided")
-    List<String> castIds,
+    List<ObjectId> castIds,
 
     Boolean series,
 
-    @NotBlank(message = "Director is required")
-    String directedById,
+    @NotNull(message = "Director is required")
+    @Size(min = 1, message = "At least one director must be provided")
+    List<ObjectId> directedByIds,
 
     String basedOn,
 
-    @NotBlank(message = "Producer is required")
-    String producerId,
+    @NotNull(message = "Producer is required")
+    @Size(min = 1, message = "At least one producer must be provided")
+    List<ObjectId> producersIds,
 
     @NotNull(message = "Writer is required")
     @Size(min = 1, message = "At least one writer must be provided")
-    List<String> writersIds
+    List<ObjectId> writersIds
 ) {
 
 

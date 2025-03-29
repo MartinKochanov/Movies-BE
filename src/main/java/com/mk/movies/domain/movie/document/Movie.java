@@ -1,7 +1,6 @@
 package com.mk.movies.domain.movie.document;
 
 import com.mk.movies.domain.movie.enums.Genre;
-import com.mk.movies.domain.movie_crew_member.document.MovieCrewMember;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,10 +27,10 @@ public class Movie {
     private String imageUrl;
     private String trailerUrl;
     private String filmStudio;
-    private List<String> castIds;
     private boolean series;
-    private String directedById;
     private String basedOn;
-    private String producerId;
-    private List<String> writersIds;
+    private List<ObjectId> castIds;
+    private List<ObjectId> directedByIds;
+    private List<ObjectId> producersIds;
+    private List<ObjectId> writersIds;
 }
