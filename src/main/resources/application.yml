@@ -3,6 +3,10 @@ spring:
         name: movies
     data:
         mongodb:
-            uri: mongodb+srv://root:lape3505@cluster0.colic.mongodb.net/myMovieDB?retryWrites=true&w=majority
+            uri: ${MONGODB_URI}
             database: myMovieDB
             auto-index-creation: true
+minio:
+    url: ${MINIO_URL:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:admin}
+    secret-key: ${MINIO_SECRET_KEY:admin123}ó
