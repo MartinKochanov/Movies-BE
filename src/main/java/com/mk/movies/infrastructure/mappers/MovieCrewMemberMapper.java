@@ -18,11 +18,13 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface MovieCrewMemberMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "imageUrl", ignore = true)
     MovieCrewMember toDocument(MovieCrewMemberRequest movieCrewMemberRequest);
 
     @Mapping(target = "id", source = "id", qualifiedByName = "objectIdToString")
     MovieCrewMemberView toView(MovieCrewMember movieCrewMember);
 
+    @Mapping(target = "imageUrl", ignore = true)
     void updateDocument(MovieCrewMemberUpdateRequest movieCrewMemberRequest,
         @MappingTarget MovieCrewMember movieCrewMember);
 

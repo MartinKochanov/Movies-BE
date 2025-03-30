@@ -9,6 +9,7 @@ import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberView;
 import com.mk.movies.domain.movie_crew_member.repository.MovieCrewMemberRepository;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import com.mk.movies.infrastructure.mappers.MovieCrewMemberMapper;
+import com.mk.movies.infrastructure.minio.MinioService;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -21,9 +22,12 @@ public class MovieCrewMemberService {
 
     private final MovieCrewMemberRepository movieCrewMemberRepository;
     private final MovieCrewMemberMapper movieCrewMemberMapper;
+    private final MinioService minioService;
 
     public MovieCrewMemberView create(MovieCrewMemberRequest movieCrewMemberRequest) {
+        var imageUrl = minioService.uploadFile("movie-crew-images", movieCrewMemberRequest.image());
         var movieCrewMember = movieCrewMemberMapper.toDocument(movieCrewMemberRequest);
+        movieCrewMember.setImageUrl(imageUrl);
         return movieCrewMemberMapper.toView(movieCrewMemberRepository.save(movieCrewMember));
     }
 
@@ -45,14 +49,16 @@ public class MovieCrewMemberService {
     public MovieCrewMemberView update(String id,
         MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
         validateObjectId(id);
+
+        var imageUrl = minioService.uploadFile("movie-crew-images", movieCrewMemberRequest.image());
         var movieCrewMember = getMovieCrewMember(new ObjectId(id));
 
         movieCrewMemberMapper.updateDocument(movieCrewMemberRequest, movieCrewMember);
+        movieCrewMember.setImageUrl(imageUrl);
 
         movieCrewMemberRepository.save(movieCrewMember);
 
         return movieCrewMemberMapper.toView(movieCrewMember);
-
     }
 
     public void delete(String id) {
