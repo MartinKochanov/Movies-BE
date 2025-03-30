@@ -40,12 +40,6 @@ public class MovieCrewMemberService {
         return movieCrewMemberMapper.toView(getMovieCrewMember(new ObjectId(id)));
     }
 
-    private MovieCrewMember getMovieCrewMember(ObjectId id) {
-        return movieCrewMemberRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "Movie crew member with id " + id + " not found"));
-    }
-
     public MovieCrewMemberView update(String id,
         MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
         validateObjectId(id);
@@ -63,15 +57,21 @@ public class MovieCrewMemberService {
 
     public void delete(String id) {
         validateObjectId(id);
+
         var objectId = new ObjectId(id);
-        validateMovieCrewMemberExists(objectId);
+        var movieCrewMember = getMovieCrewMember(objectId);
+
+        if (movieCrewMember.getImageUrl() != null && !movieCrewMember.getImageUrl().isEmpty()) {
+            String fileName = movieCrewMember.getImageUrl()
+                .substring(movieCrewMember.getImageUrl().lastIndexOf("/") + 1);
+            minioService.deleteFile("movie-crew-images", fileName);
+        }
         movieCrewMemberRepository.deleteById(objectId);
     }
 
-    private void validateMovieCrewMemberExists(ObjectId id) {
-        if (!movieCrewMemberRepository.existsById(id)) {
-            throw new ResourceNotFoundException(
-                "Movie crew member with id " + id + " not found");
-        }
+    private MovieCrewMember getMovieCrewMember(ObjectId id) {
+        return movieCrewMemberRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Movie crew member with id " + id + " not found"));
     }
 }

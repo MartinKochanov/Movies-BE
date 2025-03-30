@@ -7,6 +7,7 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import io.minio.SetBucketPolicyArgs;
 import jakarta.annotation.PostConstruct;
 import java.util.UUID;
@@ -86,6 +87,20 @@ public class MinioService {
             log.error("❌ Error setting public policy for bucket: {}", bucketName, e);
             throw new MinioInitializationException(
                 "❌ Error setting public policy for bucket: " + bucketName, e);
+        }
+    }
+
+    public void deleteFile(String bucketName, String fileName) {
+        try {
+            minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fileName)
+                    .build()
+            );
+            log.info("✅ Successfully deleted file: {}", fileName);
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error deleting file from MinIO", e);
         }
     }
 }
