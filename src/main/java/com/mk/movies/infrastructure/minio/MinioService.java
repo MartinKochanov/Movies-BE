@@ -1,6 +1,9 @@
 package com.mk.movies.infrastructure.minio;
 
 import static com.mk.movies.infrastructure.minio.MinioPolicyUtil.getPublicReadPolicy;
+import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_CREW_IMAGES_BUCKET;
+import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_POSTERS_BUCKET;
+import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_TRAILERS_BUCKET;
 
 import com.mk.movies.infrastructure.exceptions.MinioInitializationException;
 import io.minio.BucketExistsArgs;
@@ -25,9 +28,9 @@ public class MinioService {
     private final MinioClient minioClient;
 
     private static final String[] BUCKETS = {
-        "movie-posters",
-        "movie-trailers",
-        "movie-crew-images"
+        MOVIE_POSTERS_BUCKET,
+        MOVIE_TRAILERS_BUCKET,
+        MOVIE_CREW_IMAGES_BUCKET
     };
 
     @PostConstruct
