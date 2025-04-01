@@ -21,7 +21,11 @@ public interface MovieMapper {
     MovieSimpleView toSimpleView(Movie movie);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "imageUrl", ignore = true)
+    @Mapping(target = "trailerUrl", ignore = true)
     Movie toDocument(MovieRequest dto);
 
+    @Mapping(target = "imageUrl", ignore = true)
+    @Mapping(target = "trailerUrl", ignore = true)
     void updateDocument(MovieUpdateRequest request, @MappingTarget Movie movie);
 }
