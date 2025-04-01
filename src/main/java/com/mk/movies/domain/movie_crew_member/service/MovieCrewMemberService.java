@@ -48,11 +48,11 @@ public class MovieCrewMemberService {
         MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
         validateObjectId(id);
 
-        var imageUrl = minioService.uploadFile(
-            MOVIE_CREW_IMAGES_BUCKET,
-            movieCrewMemberRequest.image());
-
         var movieCrewMember = getMovieCrewMember(new ObjectId(id));
+
+        var imageUrl = movieCrewMemberRequest.image() != null
+            ? minioService.uploadFile(MOVIE_CREW_IMAGES_BUCKET, movieCrewMemberRequest.image())
+            : movieCrewMember.getImageUrl();
 
         movieCrewMemberMapper.updateDocument(movieCrewMemberRequest, movieCrewMember);
         movieCrewMember.setImageUrl(imageUrl);
@@ -68,11 +68,10 @@ public class MovieCrewMemberService {
         var objectId = new ObjectId(id);
         var movieCrewMember = getMovieCrewMember(objectId);
 
-        if (movieCrewMember.getImageUrl() != null && !movieCrewMember.getImageUrl().isEmpty()) {
-            String fileName = movieCrewMember.getImageUrl()
-                .substring(movieCrewMember.getImageUrl().lastIndexOf("/") + 1);
-            minioService.deleteFile(MOVIE_CREW_IMAGES_BUCKET, fileName);
-        }
+        String fileName = movieCrewMember.getImageUrl()
+            .substring(movieCrewMember.getImageUrl().lastIndexOf("/") + 1);
+
+        minioService.deleteFile(MOVIE_CREW_IMAGES_BUCKET, fileName);
         movieCrewMemberRepository.deleteById(objectId);
     }
 

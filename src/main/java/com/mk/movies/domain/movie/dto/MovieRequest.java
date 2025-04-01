@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 public record MovieRequest(
     @NotBlank(message = "Title ìs required")
@@ -27,23 +28,25 @@ public record MovieRequest(
     @NotBlank(message = "Plot is required")
     String plot,
 
-    String imageUrl,
-    String trailerUrl,
+    @NotNull(message = "Image is required")
+    MultipartFile imageUrl,
+
+    @NotNull(message = "Trailer is required")
+    MultipartFile trailerUrl,
 
     @NotBlank(message = "Film studio is required")
     String filmStudio,
 
+    String basedOn,
+
+    Boolean series,
     @NotNull(message = "Cast is required")
     @Size(min = 1, message = "At least one cast member must be provided")
     List<ObjectId> castIds,
 
-    Boolean series,
-
     @NotNull(message = "Director is required")
     @Size(min = 1, message = "At least one director must be provided")
     List<ObjectId> directedByIds,
-
-    String basedOn,
 
     @NotNull(message = "Producer is required")
     @Size(min = 1, message = "At least one producer must be provided")
@@ -53,6 +56,5 @@ public record MovieRequest(
     @Size(min = 1, message = "At least one writer must be provided")
     List<ObjectId> writersIds
 ) {
-
 
 }

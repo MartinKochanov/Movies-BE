@@ -6,7 +6,12 @@ spring:
             uri: ${MONGODB_URI}
             database: myMovieDB
             auto-index-creation: true
+    servlet:
+      multipart:
+          max-file-size: 30MB
+          max-request-size: 30MB
+
 minio:
     url: ${MINIO_URL:http://localhost:9000}
     access-key: ${MINIO_ACCESS_KEY:admin}
-    secret-key: ${MINIO_SECRET_KEY:admin123}ó
+    secret-key: ${MINIO_SECRET_KEY:admin123}

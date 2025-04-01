@@ -31,7 +31,7 @@ public class MongoDBSchemaConfig {
         Document moviesJsonSchema = new Document("$jsonSchema",
             new Document("bsonType", "object")
                 .append("required", List.of("_id", "title", "duration", "releaseYear", "genres",
-                    "plot", "filmStudio", "castIds", "directedByIds", "producersIds", "writersIds"))
+                    "plot", "filmStudio", "castIds", "directedByIds", "producersIds", "writersIds", "imageUrl", "trailerUrl"))
                 .append("properties", new Document()
                     .append("_id", new Document("bsonType", "objectId").append("description",
                         "Must be a valid ObjectId"))
@@ -86,11 +86,10 @@ public class MongoDBSchemaConfig {
         log.info("Schema validation applied to Movies collection");
     }
 
-
     private void applyMovieCrewMemberSchema(MongoDatabase database) {
         Document movieCrewMemberJsonSchema = new Document("$jsonSchema",
             new Document("bsonType", "object")
-                .append("required", List.of("_id", "firstName", "lastName"))
+                .append("required", List.of("_id", "firstName", "lastName", "imageUrl"))
                 .append("properties", new Document()
                     .append("_id", new Document("bsonType", "objectId")
                         .append("description", "Must be a valid ObjectId"))
@@ -101,7 +100,7 @@ public class MongoDBSchemaConfig {
                         .append("minLength", 2)
                         .append("description", "Last name must be at least 2 characters long"))
                     .append("imageUrl", new Document("bsonType", "string")
-                        .append("description", "Image URL is optional"))
+                        .append("pattern", "^(http|https)://.*$"))
                 )
         );
 
