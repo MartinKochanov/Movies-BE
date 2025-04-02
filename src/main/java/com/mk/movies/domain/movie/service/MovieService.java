@@ -1,7 +1,8 @@
 package com.mk.movies.domain.movie.service;
 
-import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_POSTERS_BUCKET;
-import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_TRAILERS_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_POSTERS_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_TRAILERS_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioUtil.extractFileName;
 import static com.mk.movies.infrastructure.util.ObjectIdUtil.validateObjectId;
 
 import com.mk.movies.domain.movie.document.Movie;
@@ -52,18 +53,27 @@ public class MovieService {
         validateObjectId(id);
         var movie = getMovie(new ObjectId(id));
 
-        var imageUrl = movieUpdateRequest.imageUrl() != null
-            ? minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieUpdateRequest.imageUrl())
-            : movie.getImageUrl();
+        if (movieUpdateRequest.imageUrl() != null) {
+            String oldImageName = extractFileName(movie.getImageUrl());
+            minioService.deleteFile(MOVIE_POSTERS_BUCKET, oldImageName);
 
-        var trailerUrl = movieUpdateRequest.trailerUrl() != null
-            ? minioService.uploadFile(MOVIE_TRAILERS_BUCKET, movieUpdateRequest.trailerUrl())
-            : movie.getTrailerUrl();
+            var imageUrl = minioService.uploadFile(
+                MOVIE_POSTERS_BUCKET,
+                movieUpdateRequest.imageUrl());
+            movie.setImageUrl(imageUrl);
+        }
 
-        movie.setImageUrl(imageUrl);
-        movie.setTrailerUrl(trailerUrl);
+        if (movieUpdateRequest.trailerUrl() != null) {
+            String oldTrailerName = extractFileName(movie.getTrailerUrl());
+            minioService.deleteFile(MOVIE_TRAILERS_BUCKET, oldTrailerName);
+
+            var trailerUrl = minioService.uploadFile(
+                MOVIE_TRAILERS_BUCKET,
+                movieUpdateRequest.trailerUrl());
+            movie.setTrailerUrl(trailerUrl);
+        }
+
         movieMapper.updateDocument(movieUpdateRequest, movie);
-
         movieRepository.save(movie);
         return getMovieDetailsViewById(movie.getId());
     }
@@ -73,11 +83,8 @@ public class MovieService {
         var objectId = new ObjectId(id);
         var movie = getMovie(objectId);
 
-        String imageName = movie.getImageUrl()
-            .substring(movie.getImageUrl().lastIndexOf("/") + 1);
-
-        String trailerName = movie.getTrailerUrl()
-            .substring(movie.getTrailerUrl().lastIndexOf("/") + 1);
+        String imageName = extractFileName(movie.getImageUrl());
+        String trailerName = extractFileName(movie.getTrailerUrl());
 
         minioService.deleteFile(MOVIE_POSTERS_BUCKET, imageName);
         minioService.deleteFile(MOVIE_TRAILERS_BUCKET, trailerName);

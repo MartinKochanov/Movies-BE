@@ -1,9 +1,9 @@
 package com.mk.movies.infrastructure.minio;
 
-import static com.mk.movies.infrastructure.minio.MinioPolicyUtil.getPublicReadPolicy;
-import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_CREW_IMAGES_BUCKET;
-import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_POSTERS_BUCKET;
-import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_TRAILERS_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_CREW_IMAGES_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_POSTERS_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_TRAILERS_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioUtil.getPublicReadPolicy;
 
 import com.mk.movies.infrastructure.exceptions.MinioInitializationException;
 import io.minio.BucketExistsArgs;

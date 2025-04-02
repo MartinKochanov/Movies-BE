@@ -1,4 +1,4 @@
-package com.mk.movies.infrastructure.util;
+package com.mk.movies.infrastructure.minio;
 
 public class MinioConstants {
 
