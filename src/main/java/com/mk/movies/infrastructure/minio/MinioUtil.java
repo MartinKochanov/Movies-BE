@@ -1,6 +1,6 @@
 package com.mk.movies.infrastructure.minio;
 
-public class MinioPolicyUtil {
+public class MinioUtil {
 
     public static String getPublicReadPolicy(String bucketName) {
         return """
@@ -16,5 +16,9 @@ public class MinioPolicyUtil {
                 ]
             }
             """.formatted(bucketName);
+    }
+
+    public static String extractFileName(String fileUrl) {
+        return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
     }
 }

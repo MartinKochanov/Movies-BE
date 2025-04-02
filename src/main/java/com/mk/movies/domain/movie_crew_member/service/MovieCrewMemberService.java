@@ -1,6 +1,7 @@
 package com.mk.movies.domain.movie_crew_member.service;
 
-import static com.mk.movies.infrastructure.util.MinioConstants.MOVIE_CREW_IMAGES_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_CREW_IMAGES_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioUtil.extractFileName;
 import static com.mk.movies.infrastructure.util.ObjectIdUtil.validateObjectId;
 
 import com.mk.movies.domain.movie_crew_member.document.MovieCrewMember;
@@ -50,13 +51,17 @@ public class MovieCrewMemberService {
 
         var movieCrewMember = getMovieCrewMember(new ObjectId(id));
 
-        var imageUrl = movieCrewMemberRequest.image() != null
-            ? minioService.uploadFile(MOVIE_CREW_IMAGES_BUCKET, movieCrewMemberRequest.image())
-            : movieCrewMember.getImageUrl();
+        if (movieCrewMemberRequest.image() != null) {
+            var oldFileName = extractFileName(movieCrewMember.getImageUrl());
+            minioService.deleteFile(MOVIE_CREW_IMAGES_BUCKET, oldFileName);
+
+            var newImageUrl = minioService.uploadFile(
+                MOVIE_CREW_IMAGES_BUCKET,
+                movieCrewMemberRequest.image());
+            movieCrewMember.setImageUrl(newImageUrl);
+        }
 
         movieCrewMemberMapper.updateDocument(movieCrewMemberRequest, movieCrewMember);
-        movieCrewMember.setImageUrl(imageUrl);
-
         movieCrewMemberRepository.save(movieCrewMember);
 
         return movieCrewMemberMapper.toView(movieCrewMember);
@@ -68,8 +73,7 @@ public class MovieCrewMemberService {
         var objectId = new ObjectId(id);
         var movieCrewMember = getMovieCrewMember(objectId);
 
-        String fileName = movieCrewMember.getImageUrl()
-            .substring(movieCrewMember.getImageUrl().lastIndexOf("/") + 1);
+        String fileName = extractFileName(movieCrewMember.getImageUrl());
 
         minioService.deleteFile(MOVIE_CREW_IMAGES_BUCKET, fileName);
         movieCrewMemberRepository.deleteById(objectId);
