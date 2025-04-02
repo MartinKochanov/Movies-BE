@@ -73,7 +73,7 @@ public class MovieController {
         @ApiResponse(responseCode = "400", description = "Invalid input data or object ID"),
         @ApiResponse(responseCode = "404", description = "Movie not found")
     })
-    @PatchMapping("/{id}")
+    @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<MovieDetailsView> update(@PathVariable String id,
         @ModelAttribute @Valid MovieUpdateRequest movie) {
         return ResponseEntity.ok(movieService.updateMovie(id, movie));
