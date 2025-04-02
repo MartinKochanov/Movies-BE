@@ -1,4 +1,4 @@
-package com.mk.config;
+package com.mk.movies.config;
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;

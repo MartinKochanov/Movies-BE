@@ -1,5 +1,6 @@
 package com.mk.movies.web;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -7,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.mk.movies.domain.movie_crew_member.document.MovieCrewMember;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberRequest;
+import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberUpdateRequest;
 import com.mk.movies.domain.movie_crew_member.repository.MovieCrewMemberRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -24,6 +27,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class MovieCrewMemberControllerTest {
 
     @Autowired
@@ -34,16 +38,16 @@ class MovieCrewMemberControllerTest {
     private static final String BASE_URL = "/movie-crew-members";
     private static MovieCrewMember movieCrewMember;
     private static MovieCrewMemberRequest movieCrewMemberRequest;
+    private static MovieCrewMemberUpdateRequest movieCrewMemberUpdateRequest;
 
     @BeforeEach
     void setUp() {
-        movieCrewMemberRepository.deleteAll();
 
         var mockImage = new MockMultipartFile(
             "image",
             "image.jpg",
             "image/jpeg",
-            "test image content".getBytes()
+            new byte[0]
         );
 
         movieCrewMemberRequest = new MovieCrewMemberRequest(
@@ -52,11 +56,20 @@ class MovieCrewMemberControllerTest {
             mockImage
         );
 
+        movieCrewMemberUpdateRequest = new MovieCrewMemberUpdateRequest(
+            "Updated First Name",
+            "Updated Last Name",
+            mockImage
+        );
+
         movieCrewMember = new MovieCrewMember();
         movieCrewMember.setFirstName("First Name");
         movieCrewMember.setLastName("Last Name");
         movieCrewMember.setImageUrl("http://localhost:8080/image.jpg");
 
+        movieCrewMemberRepository.save(movieCrewMember);
+        movieCrewMemberRepository.save(movieCrewMember);
+        movieCrewMemberRepository.save(movieCrewMember);
         movieCrewMemberRepository.save(movieCrewMember);
 
     }
@@ -122,6 +135,93 @@ class MovieCrewMemberControllerTest {
     @Test
     void getById_returns_not_found_givenNonExistentId() throws Exception {
         mockMvc.perform(get(BASE_URL + "/" + new ObjectId().toHexString()))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void update_returns_ok_givenValidData() throws Exception {
+        mockMvc.perform(multipart(BASE_URL + "/" + movieCrewMember.getId())
+                .file((MockMultipartFile) movieCrewMemberUpdateRequest.image())
+                .param("firstName", movieCrewMemberUpdateRequest.firstName())
+                .param("lastName", movieCrewMemberUpdateRequest.lastName())
+                .with(request -> {
+                    request.setMethod("PATCH");
+                    return request;
+                }))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void update_returns_bad_request_givenInvalidId() throws Exception {
+        mockMvc.perform(multipart(BASE_URL + "/invalid-id")
+                .file((MockMultipartFile) movieCrewMemberUpdateRequest.image())
+                .param("firstName", movieCrewMemberUpdateRequest.firstName())
+                .param("lastName", movieCrewMemberUpdateRequest.lastName())
+                .with(request -> {
+                    request.setMethod("PATCH");
+                    return request;
+                }))
+            .andExpect(status().isBadRequest());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "F, Last Name", // First name less than two characters
+        "First Name, L" // Last name less than two characters
+    })
+    void update_returns_bad_request_givenInvalidNames(String firstName, String lastName)
+        throws Exception {
+        mockMvc.perform(multipart(BASE_URL + "/" + movieCrewMember.getId())
+                .file((MockMultipartFile) movieCrewMemberUpdateRequest.image())
+                .param("firstName", firstName)
+                .param("lastName", lastName)
+                .with(request -> {
+                    request.setMethod("PATCH");
+                    return request;
+                }))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void update_returns_not_found_givenNonExistentId() throws Exception {
+        mockMvc.perform(multipart(BASE_URL + "/" + new ObjectId().toHexString())
+                .file((MockMultipartFile) movieCrewMemberUpdateRequest.image())
+                .param("firstName", movieCrewMemberUpdateRequest.firstName())
+                .param("lastName", movieCrewMemberUpdateRequest.lastName())
+                .with(request -> {
+                    request.setMethod("PATCH");
+                    return request;
+                }))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void delete_returns_no_content_givenValidId() throws Exception {
+        mockMvc.perform(delete(BASE_URL + "/" + movieCrewMember.getId())
+                .with(request -> {
+                    request.setMethod("DELETE");
+                    return request;
+                }))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void delete_returns_bad_request_givenInvalidId() throws Exception {
+        mockMvc.perform(delete(BASE_URL + "/invalid-id")
+                .with(request -> {
+                    request.setMethod("DELETE");
+                    return request;
+                }))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void delete_returns_not_found_givenNonExistentId() throws Exception {
+        mockMvc.perform(delete(BASE_URL + "/" + new ObjectId().toHexString())
+                .with(request -> {
+                    request.setMethod("DELETE");
+                    return request;
+                }))
             .andExpect(status().isNotFound());
     }
 }
