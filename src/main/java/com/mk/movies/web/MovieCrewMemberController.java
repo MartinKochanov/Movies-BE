@@ -7,6 +7,10 @@ import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberRequest;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberUpdateRequest;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberView;
 import com.mk.movies.domain.movie_crew_member.service.MovieCrewMemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Movie Crew Members", description = "API for managing movie crew members")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/movie-crew-members")
@@ -28,6 +33,11 @@ public class MovieCrewMemberController {
 
     private final MovieCrewMemberService movieCrewMemberService;
 
+    @Operation(summary = "Create a movie crew member", description = "Create a movie crew member with the given data")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Movie crew member created"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     @PostMapping
     private ResponseEntity<MovieCrewMemberView> createMovieCrewMember(
         @ModelAttribute @Valid MovieCrewMemberRequest movieCrewMemberRequest) {
@@ -36,22 +46,44 @@ public class MovieCrewMemberController {
             .body(movieCrewMemberService.create(movieCrewMemberRequest));
     }
 
+    @Operation(summary = "Get all movie crew members", description = "Get all movie crew members with pagination")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Movie crew members retrieved"),
+    })
     @GetMapping
     private ResponseEntity<Page<MovieCrewMemberView>> getMovieCrewMember(Pageable pageable) {
         return ResponseEntity.ok().body(movieCrewMemberService.getAll(pageable));
     }
 
+    @Operation(summary = "Get movie crew member details", description = "Retrieves detailed information about a specific movie crew member.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Movie crew member retrieved"),
+        @ApiResponse(responseCode = "400", description = "Invalid object id"),
+        @ApiResponse(responseCode = "404", description = "Movie crew member not found")
+    })
     @GetMapping("/{id}")
     private ResponseEntity<MovieCrewMemberView> getMovieCrewMemberById(@PathVariable String id) {
         return ResponseEntity.ok().body(movieCrewMemberService.getById(id));
     }
 
+    @Operation(summary = "Update a movie crew member", description = "Update an existing movie crew member. Supports partial updates." )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Movie crew member updated"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data or object id"),
+        @ApiResponse(responseCode = "404", description = "Movie crew member not found")
+    })
     @PatchMapping("/{id}")
     private ResponseEntity<MovieCrewMemberView> updateMovieCrewMember(@PathVariable String id,
         @ModelAttribute @Valid MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
         return ResponseEntity.ok().body(movieCrewMemberService.update(id, movieCrewMemberRequest));
     }
 
+    @Operation(summary = "Delete a movie", description = "Deletes a movie by its ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Movie crew member deleted"),
+        @ApiResponse(responseCode = "400", description = "Invalid object id"),
+        @ApiResponse(responseCode = "404", description = "Movie crew member not found")
+    })
     @DeleteMapping("/{id}")
     private ResponseEntity<Void> deleteMovieCrewMember(@PathVariable String id) {
         movieCrewMemberService.delete(id);
