@@ -25,7 +25,6 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
         var aggregation = newAggregation(
             match(Criteria.where("_id").is(id)),
 
-            // Lookup for each crew member type (cast, directedBy, producers, writers)
             lookup("MovieCrewMembers", "castIds", "_id", "cast"),
             lookup("MovieCrewMembers", "directedByIds", "_id", "directedBy"),
             lookup("MovieCrewMembers", "producersIds", "_id", "producers"),
@@ -38,11 +37,9 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
             )
         );
 
-        // Execute aggregation and map results to MovieDetailsView
         AggregationResults<MovieDetailsView> results = mongoTemplate
             .aggregate(aggregation, "Movies", MovieDetailsView.class);
 
-        // Return the result
         return Optional.ofNullable(results.getUniqueMappedResult());
     }
 
