@@ -10,11 +10,13 @@ import com.mk.movies.domain.movie_crew_member.document.MovieCrewMember;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberRequest;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberUpdateRequest;
 import com.mk.movies.domain.movie_crew_member.repository.MovieCrewMemberRepository;
+import com.mk.movies.infrastructure.minio.MinioService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +25,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-//TODO: Prevent file upload in tests
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
@@ -34,6 +35,8 @@ class MovieCrewMemberControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private MovieCrewMemberRepository movieCrewMemberRepository;
+    @Mock
+    private MinioService minioService;
 
     private static final String BASE_URL = "/movie-crew-members";
     private static MovieCrewMember movieCrewMember;
@@ -68,10 +71,6 @@ class MovieCrewMemberControllerTest {
         movieCrewMember.setImageUrl("http://localhost:8080/image.jpg");
 
         movieCrewMemberRepository.save(movieCrewMember);
-        movieCrewMemberRepository.save(movieCrewMember);
-        movieCrewMemberRepository.save(movieCrewMember);
-        movieCrewMemberRepository.save(movieCrewMember);
-
     }
 
     @Test
@@ -148,7 +147,9 @@ class MovieCrewMemberControllerTest {
                     request.setMethod("PATCH");
                     return request;
                 }))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName").value(movieCrewMemberUpdateRequest.firstName()))
+            .andExpect(jsonPath("$.lastName").value(movieCrewMemberUpdateRequest.lastName()));
     }
 
     @Test

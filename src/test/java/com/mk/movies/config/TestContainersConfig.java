@@ -1,5 +1,8 @@
 package com.mk.movies.config;
 
+import static org.mockito.Mockito.mock;
+
+import com.mk.movies.infrastructure.minio.MinioService;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,5 +27,10 @@ public class TestContainersConfig {
         String uri = mongoDBContainer.getReplicaSetUrl();
         MongoDatabaseFactory factory = new SimpleMongoClientDatabaseFactory(uri);
         return new MongoTemplate(factory);
+    }
+
+    @Bean
+    public MinioService minioService() {
+        return mock(MinioService.class);
     }
 }
