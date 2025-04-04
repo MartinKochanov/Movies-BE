@@ -7,9 +7,9 @@ spring:
             database: myMovieDB
             auto-index-creation: true
     servlet:
-      multipart:
-          max-file-size: 30MB
-          max-request-size: 30MB
+        multipart:
+            max-file-size: 30MB
+            max-request-size: 30MB
 
 minio:
     url: ${MINIO_URL:http://localhost:9000}

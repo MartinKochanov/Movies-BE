@@ -51,7 +51,7 @@ public class MovieCrewMemberService {
 
         var movieCrewMember = getMovieCrewMember(new ObjectId(id));
 
-        if (movieCrewMemberRequest.image() != null) {
+        if (movieCrewMemberRequest.image() != null && !movieCrewMemberRequest.image().isEmpty()) {
             var oldFileName = extractFileName(movieCrewMember.getImageUrl());
             minioService.deleteFile(MOVIE_CREW_IMAGES_BUCKET, oldFileName);
 

@@ -126,8 +126,6 @@ class MovieCrewMemberServiceTest {
     void update_returnsUpdatedMovieCrewMemberView_whenMovieCrewMemberIsUpdated() {
         when(movieCrewMemberRepository.findById(movieCrewMember.getId())).thenReturn(
             Optional.of(movieCrewMember));
-        when(minioService.uploadFile(MOVIE_CREW_IMAGES_BUCKET,
-            movieCrewMemberUpdateRequest.image())).thenReturn(movieCrewMember.getImageUrl());
         when(movieCrewMemberMapper.toView(movieCrewMember)).thenReturn(movieCrewMemberView);
 
         var result = movieCrewMemberService.update(movieCrewMember.getId().toHexString(),

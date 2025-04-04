@@ -4,7 +4,8 @@ import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_POSTERS_BU
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_TRAILERS_BUCKET;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.mk.movies.domain.movie.document.Movie;
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
@@ -135,10 +136,13 @@ class MovieServiceTest {
     @Test
     void create_returnsMovieDetailsView_whenMovieIsSaved() {
         when(movieMapper.toDocument(movieRequest)).thenReturn(movie);
-        when(minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieRequest.imageUrl())).thenReturn(movie.getImageUrl());
-        when(minioService.uploadFile(MOVIE_TRAILERS_BUCKET, movieRequest.trailerUrl())).thenReturn(movie.getTrailerUrl());
+        when(minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieRequest.imageUrl())).thenReturn(
+            movie.getImageUrl());
+        when(minioService.uploadFile(MOVIE_TRAILERS_BUCKET, movieRequest.trailerUrl())).thenReturn(
+            movie.getTrailerUrl());
         when(movieRepository.save(movie)).thenReturn(movie);
-        when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(Optional.of(movieDetailsView));
+        when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(
+            Optional.of(movieDetailsView));
 
         var result = movieService.create(movieRequest);
 
@@ -159,7 +163,8 @@ class MovieServiceTest {
 
     @Test
     void getMovieById_returnsMovieDetailsView_whenMovieExists() {
-        when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(Optional.of(movieDetailsView));
+        when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(
+            Optional.of(movieDetailsView));
 
         var result = movieService.getMovieById(movie.getId().toHexString());
 
@@ -170,15 +175,15 @@ class MovieServiceTest {
     void getMovieById_throwsResourceNotFoundException_whenMovieDoesNotExist() {
         when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> movieService.getMovieById(movie.getId().toHexString()));
+        assertThrows(ResourceNotFoundException.class,
+            () -> movieService.getMovieById(movie.getId().toHexString()));
     }
 
     @Test
     void updateMovie_returnsUpdatedMovieDetailsView_whenMovieIsUpdated() {
         when(movieRepository.findById(movie.getId())).thenReturn(Optional.of(movie));
-        when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(Optional.of(movieDetailsView));
-        when(minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieUpdateRequest.imageUrl())).thenReturn(movie.getImageUrl());
-        when(minioService.uploadFile(MOVIE_TRAILERS_BUCKET, movieUpdateRequest.trailerUrl())).thenReturn(movie.getTrailerUrl());
+        when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(
+            Optional.of(movieDetailsView));
 
         var result = movieService.updateMovie(movie.getId().toHexString(), movieUpdateRequest);
 
@@ -200,6 +205,7 @@ class MovieServiceTest {
     void deleteMovie_throwsResourceNotFoundException_whenMovieDoesNotExist() {
         when(movieRepository.findById(movie.getId())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> movieService.deleteMovie(movie.getId().toHexString()));
+        assertThrows(ResourceNotFoundException.class,
+            () -> movieService.deleteMovie(movie.getId().toHexString()));
     }
 }

@@ -53,7 +53,7 @@ public class MovieService {
         validateObjectId(id);
         var movie = getMovie(new ObjectId(id));
 
-        if (movieUpdateRequest.imageUrl() != null) {
+        if (movieUpdateRequest.imageUrl() != null && !movieUpdateRequest.imageUrl().isEmpty()) {
             String oldImageName = extractFileName(movie.getImageUrl());
             minioService.deleteFile(MOVIE_POSTERS_BUCKET, oldImageName);
 
@@ -63,7 +63,7 @@ public class MovieService {
             movie.setImageUrl(imageUrl);
         }
 
-        if (movieUpdateRequest.trailerUrl() != null) {
+        if (movieUpdateRequest.trailerUrl() != null && !movieUpdateRequest.trailerUrl().isEmpty()) {
             String oldTrailerName = extractFileName(movie.getTrailerUrl());
             minioService.deleteFile(MOVIE_TRAILERS_BUCKET, oldTrailerName);
 

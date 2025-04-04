@@ -9,6 +9,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -62,6 +63,18 @@ public class GlobalExceptionHandler {
         );
         problemDetail.setTitle("MinIO Initialization Error");
         problemDetail.setType(URI.create("https://api.mk.movies/errors/minio-initialization"));
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ProblemDetail handleMultipartException(MultipartException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, "Invalid multipart request: " + ex.getMessage()
+        );
+        problemDetail.setTitle("Multipart Error");
+        problemDetail.setType(URI.create("https://api.mk.movies/errors/multipart"));
         problemDetail.setProperty("timestamp", LocalDateTime.now());
 
         return problemDetail;

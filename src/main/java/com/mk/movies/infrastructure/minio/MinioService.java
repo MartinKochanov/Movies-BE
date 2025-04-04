@@ -25,13 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class MinioService {
 
     private static final String URL = "http://localhost:9000";
-    private final MinioClient minioClient;
-
     private static final String[] BUCKETS = {
         MOVIE_POSTERS_BUCKET,
         MOVIE_TRAILERS_BUCKET,
         MOVIE_CREW_IMAGES_BUCKET
     };
+    private final MinioClient minioClient;
 
     @PostConstruct
     public void initializeBuckets() {

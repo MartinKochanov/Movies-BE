@@ -33,18 +33,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 class MovieControllerTest {
 
+    private static final String BASE_URL = "/movies";
+    private static Movie movie;
+    private static MovieRequest movieRequest;
+    private static MovieUpdateRequest movieUpdateRequest;
+    @Mock
+    MinioService minioService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private MovieRepository movieRepository;
-    @Mock
-    MinioService minioService;
-
-    private static final String BASE_URL = "/movies";
-
-    private static Movie movie;
-    private static MovieRequest movieRequest;
-    private static MovieUpdateRequest movieUpdateRequest;
 
     @BeforeEach
     void setUp() {
@@ -121,6 +119,12 @@ class MovieControllerTest {
                 .param("producersIds", String.valueOf(movieRequest.producersIds().get(0)))
                 .param("writersIds", String.valueOf(movieRequest.writersIds().get(0))))
             .andExpect(status().isCreated());
+    }
+
+    @Test
+    void create_returns_bad_request_givenNoData() throws Exception {
+        mockMvc.perform(multipart(BASE_URL))
+            .andExpect(status().isBadRequest());
     }
 
     @ParameterizedTest
@@ -291,24 +295,24 @@ class MovieControllerTest {
         MockMultipartFile trailerFile = new MockMultipartFile("trailerUrl", trailerUrl, "video/mp4",
             new byte[0]);
         mockMvc.perform(multipart(BASE_URL + "/" + movie.getId())
-            .file("imageUrl", imageFile.getBytes())
-            .file("trailerUrl", trailerFile.getBytes())
-            .param("title", title)
-            .param("duration", duration != null ? String.valueOf(duration) : "")
-            .param("releaseYear", releaseYear != null ? String.valueOf(releaseYear) : "")
-            .param("genres", genres)
-            .param("plot", plot)
-            .param("filmStudio", filmStudio)
-            .param("basedOn", basedOn)
-            .param("series", series != null ? String.valueOf(series) : "")
-            .param("castIds", castIds)
-            .param("directedByIds", directedByIds)
-            .param("producersIds", producersIds)
-            .param("writersIds", writersIds)
-            .with(request -> {
-                request.setMethod("PATCH");
-                return request;
-            }))
+                .file("imageUrl", imageFile.getBytes())
+                .file("trailerUrl", trailerFile.getBytes())
+                .param("title", title)
+                .param("duration", duration != null ? String.valueOf(duration) : "")
+                .param("releaseYear", releaseYear != null ? String.valueOf(releaseYear) : "")
+                .param("genres", genres)
+                .param("plot", plot)
+                .param("filmStudio", filmStudio)
+                .param("basedOn", basedOn)
+                .param("series", series != null ? String.valueOf(series) : "")
+                .param("castIds", castIds)
+                .param("directedByIds", directedByIds)
+                .param("producersIds", producersIds)
+                .param("writersIds", writersIds)
+                .with(request -> {
+                    request.setMethod("PATCH");
+                    return request;
+                }))
             .andExpect(status().isBadRequest());
     }
 

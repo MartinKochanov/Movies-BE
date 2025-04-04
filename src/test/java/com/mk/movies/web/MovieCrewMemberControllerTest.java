@@ -31,17 +31,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 class MovieCrewMemberControllerTest {
 
+    private static final String BASE_URL = "/movie-crew-members";
+    private static MovieCrewMember movieCrewMember;
+    private static MovieCrewMemberRequest movieCrewMemberRequest;
+    private static MovieCrewMemberUpdateRequest movieCrewMemberUpdateRequest;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private MovieCrewMemberRepository movieCrewMemberRepository;
     @Mock
     private MinioService minioService;
-
-    private static final String BASE_URL = "/movie-crew-members";
-    private static MovieCrewMember movieCrewMember;
-    private static MovieCrewMemberRequest movieCrewMemberRequest;
-    private static MovieCrewMemberUpdateRequest movieCrewMemberUpdateRequest;
 
     @BeforeEach
     void setUp() {
@@ -103,6 +102,12 @@ class MovieCrewMemberControllerTest {
         mockMvc.perform(multipart(BASE_URL)
                 .param("firstName", movieCrewMemberRequest.firstName())
                 .param("lastName", movieCrewMemberRequest.lastName()))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void create_returns_bad_request_givenNoData() throws Exception {
+        mockMvc.perform(multipart(BASE_URL))
             .andExpect(status().isBadRequest());
     }
 
