@@ -1,6 +1,5 @@
 package com.mk.movies.domain.movie_crew_member.document;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

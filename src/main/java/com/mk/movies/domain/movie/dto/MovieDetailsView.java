@@ -1,5 +1,6 @@
 package com.mk.movies.domain.movie.dto;
 
+import com.mk.movies.domain.movie.enums.Genre;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberView;
 import java.util.List;
 
@@ -8,7 +9,7 @@ public record MovieDetailsView(
     String title,
     Integer duration,
     Integer releaseYear,
-    List<String> genres,
+    List<Genre> genres,
     String plot,
     String imageUrl,
     String trailerUrl,

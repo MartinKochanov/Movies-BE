@@ -38,7 +38,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "201", description = "Movie crew member created"),
         @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"})
     private ResponseEntity<MovieCrewMemberView> createMovieCrewMember(
         @ModelAttribute @Valid MovieCrewMemberRequest movieCrewMemberRequest) {
         return ResponseEntity
@@ -66,13 +66,13 @@ public class MovieCrewMemberController {
         return ResponseEntity.ok().body(movieCrewMemberService.getById(id));
     }
 
-    @Operation(summary = "Update a movie crew member", description = "Update an existing movie crew member. Supports partial updates." )
+    @Operation(summary = "Update a movie crew member", description = "Update an existing movie crew member. Supports partial updates.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Movie crew member updated"),
         @ApiResponse(responseCode = "400", description = "Invalid input data or object id"),
         @ApiResponse(responseCode = "404", description = "Movie crew member not found")
     })
-    @PatchMapping("/{id}")
+    @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
     private ResponseEntity<MovieCrewMemberView> updateMovieCrewMember(@PathVariable String id,
         @ModelAttribute @Valid MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
         return ResponseEntity.ok().body(movieCrewMemberService.update(id, movieCrewMemberRequest));

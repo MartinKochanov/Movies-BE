@@ -91,12 +91,12 @@ public class MovieService {
         movieRepository.deleteById(objectId);
     }
 
-    private Movie getMovie(ObjectId id) {
+    public Movie getMovie(ObjectId id) {
         return movieRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + id + " not found"));
     }
 
-    private MovieDetailsView getMovieDetailsViewById(ObjectId id) {
+    public MovieDetailsView getMovieDetailsViewById(ObjectId id) {
         return movieRepository.findMovieDetailsViewById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + id + " not found"));
     }
