@@ -11,9 +11,13 @@ import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
 import com.mk.movies.domain.movie.repository.MovieRepository;
+import com.mk.movies.domain.role.dto.RoleRequest;
+import com.mk.movies.domain.role.repository.RoleRepository;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import com.mk.movies.infrastructure.mappers.MovieMapper;
+import com.mk.movies.infrastructure.mappers.RoleMapper;
 import com.mk.movies.infrastructure.minio.MinioService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -27,6 +31,8 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieMapper movieMapper;
     private final MinioService minioService;
+    private final RoleMapper roleMapper;
+    private final RoleRepository roleRepository;
 
     public MovieDetailsView create(MovieRequest movieRequest) {
         var imageUrl = minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieRequest.imageUrl());
@@ -37,6 +43,8 @@ public class MovieService {
         movie.setTrailerUrl(trailerUrl);
 
         movieRepository.save(movie);
+
+        createRolesForMovieMembers(movieRequest.roles(), movie.getId());
         return getMovieDetailsViewById(movie.getId());
     }
 
@@ -99,6 +107,14 @@ public class MovieService {
     public MovieDetailsView getMovieDetailsViewById(ObjectId id) {
         return movieRepository.findMovieDetailsViewById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Movie with id " + id + " not found"));
+    }
+
+    private void createRolesForMovieMembers(List<RoleRequest> roles, ObjectId movieId) {
+        for (var roleRequest : roles) {
+            var role = roleMapper.toDocument(roleRequest);
+            role.setMovieId(movieId);
+            roleRepository.save(role);
+        }
     }
 }
 

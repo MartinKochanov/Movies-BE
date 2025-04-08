@@ -1,9 +1,11 @@
 package com.mk.movies.domain.movie.repository;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
 import java.util.Optional;
@@ -26,6 +28,18 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
             match(Criteria.where("_id").is(id)),
 
             lookup("MovieCrewMembers", "castIds", "_id", "cast"),
+            lookup("Roles", "cast.rolesIds", "_id", "castRoles"),
+            unwind("cast", true),
+            unwind("castRoles", true),
+            match(Criteria.where("castRoles.movieId").is(id)), // Filter roles by movieId
+            group("cast._id")
+                .first("cast.firstName").as("firstName")
+                .first("cast.lastName").as("lastName")
+                .first("cast.imageUrl").as("imageUrl")
+                .push("castRoles.name").as("roles"), // Collect role names
+            project("firstName", "lastName", "imageUrl", "roles"),
+
+            // Repeat similar steps for directedBy, producers, and writers if needed
             lookup("MovieCrewMembers", "directedByIds", "_id", "directedBy"),
             lookup("MovieCrewMembers", "producersIds", "_id", "producers"),
             lookup("MovieCrewMembers", "writersIds", "_id", "writers"),

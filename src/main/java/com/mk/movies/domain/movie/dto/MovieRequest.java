@@ -1,6 +1,8 @@
 package com.mk.movies.domain.movie.dto;
 
 import com.mk.movies.domain.movie.enums.Genre;
+import com.mk.movies.domain.role.dto.RoleRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -54,7 +56,10 @@ public record MovieRequest(
 
     @NotNull(message = "Writer is required")
     @Size(min = 1, message = "At least one writer must be provided")
-    List<ObjectId> writersIds
+    List<ObjectId> writersIds,
+
+    @NotNull(message = "Roles are required")
+    List<@Valid RoleRequest> roles
 ) {
 
 }

@@ -4,7 +4,8 @@ public record MovieCrewMemberView(
     String id,
     String firstName,
     String lastName,
-    String imageUrl
+    String imageUrl,
+    String role
 ) {
 
 }
