@@ -11,6 +11,7 @@ import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberRequest;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberUpdateRequest;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberView;
 import com.mk.movies.domain.movie_crew_member.repository.MovieCrewMemberRepository;
+import com.mk.movies.domain.role.document.Role;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import com.mk.movies.infrastructure.mappers.MovieCrewMemberMapper;
 import com.mk.movies.infrastructure.minio.MinioService;
@@ -47,14 +48,23 @@ class MovieCrewMemberServiceTest {
     private MovieCrewMemberRequest movieCrewMemberRequest;
     private MovieCrewMemberUpdateRequest movieCrewMemberUpdateRequest;
     private MovieCrewMemberView movieCrewMemberView;
+    private Role role;
 
     @BeforeEach
     void setUp() {
+        Role role = new Role();
+
+        role.setId(new ObjectId());
+        role.setName("Role");
+        role.setCastId(new ObjectId());
+        role.setMovieId(new ObjectId());
+
         movieCrewMember = new MovieCrewMember();
         movieCrewMember.setId(new ObjectId());
         movieCrewMember.setFirstName("Name");
         movieCrewMember.setLastName("Last Name");
         movieCrewMember.setImageUrl("http://localhost:8080/image.jpg");
+        movieCrewMember.setRolesIds(List.of(role.getId()));
 
         movieCrewMemberRequest = new MovieCrewMemberRequest(
             "Name",
@@ -72,7 +82,8 @@ class MovieCrewMemberServiceTest {
             movieCrewMember.getId().toHexString(),
             "Name",
             "Role",
-            "http://localhost:8080/image.jpg"
+            "http://localhost:8080/image.jpg",
+            role.getName()
         );
     }
 

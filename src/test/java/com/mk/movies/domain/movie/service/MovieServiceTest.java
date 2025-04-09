@@ -4,6 +4,7 @@ import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_POSTERS_BU
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_TRAILERS_BUCKET;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,8 +15,12 @@ import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
 import com.mk.movies.domain.movie.enums.Genre;
 import com.mk.movies.domain.movie.repository.MovieRepository;
+import com.mk.movies.domain.role.document.Role;
+import com.mk.movies.domain.role.dto.RoleRequest;
+import com.mk.movies.domain.role.repository.RoleRepository;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import com.mk.movies.infrastructure.mappers.MovieMapper;
+import com.mk.movies.infrastructure.mappers.RoleMapper;
 import com.mk.movies.infrastructure.minio.MinioService;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +46,13 @@ class MovieServiceTest {
     private MinioService minioService;
 
     @Mock
+    RoleMapper roleMapper;
+
+    @Mock
     private MovieMapper movieMapper;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     @InjectMocks
     private MovieService movieService;
@@ -51,9 +62,26 @@ class MovieServiceTest {
     private MovieUpdateRequest movieUpdateRequest;
     private MovieDetailsView movieDetailsView;
     private MovieSimpleView movieSimpleView;
+    private RoleRequest roleRequest;
+    private Role role;
 
     @BeforeEach
     void setUp() {
+
+        roleRequest = new RoleRequest(
+            "Role",
+            new ObjectId(),
+            new ObjectId()
+        );
+
+        role = new Role();
+        role.setId(new ObjectId());
+        role.setName("Role");
+        role.setCastId(new ObjectId());
+        role.setMovieId(new ObjectId());
+
+        when(roleMapper.toDocument(roleRequest)).thenReturn(role);
+
         movie = new Movie();
         movie.setId(new ObjectId());
         movie.setTitle("Title");
@@ -85,7 +113,8 @@ class MovieServiceTest {
             List.of(new ObjectId()),
             List.of(new ObjectId()),
             List.of(new ObjectId()),
-            List.of(new ObjectId())
+            List.of(new ObjectId()),
+            List.of(roleRequest)
         );
 
         movieUpdateRequest = new MovieUpdateRequest(
@@ -122,6 +151,8 @@ class MovieServiceTest {
             List.of(),
             List.of()
         );
+        // Use lenient stubbing to avoid UnnecessaryStubbingException
+        lenient().when(roleMapper.toDocument(roleRequest)).thenReturn(role);
 
         movieSimpleView = new MovieSimpleView(
             movie.getId().toHexString(),
@@ -134,20 +165,29 @@ class MovieServiceTest {
     }
 
     @Test
-    void create_returnsMovieDetailsView_whenMovieIsSaved() {
-        when(movieMapper.toDocument(movieRequest)).thenReturn(movie);
-        when(minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieRequest.imageUrl())).thenReturn(
-            movie.getImageUrl());
-        when(minioService.uploadFile(MOVIE_TRAILERS_BUCKET, movieRequest.trailerUrl())).thenReturn(
-            movie.getTrailerUrl());
-        when(movieRepository.save(movie)).thenReturn(movie);
-        when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(
-            Optional.of(movieDetailsView));
+void create_returnsMovieDetailsView_whenMovieIsSaved() {
 
-        var result = movieService.create(movieRequest);
+    when(movieMapper.toDocument(movieRequest)).thenReturn(movie);
+    when(minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieRequest.imageUrl()))
+        .thenReturn(movie.getImageUrl());
+    when(minioService.uploadFile(MOVIE_TRAILERS_BUCKET, movieRequest.trailerUrl()))
+        .thenReturn(movie.getTrailerUrl());
+    when(roleMapper.toDocument(roleRequest)).thenReturn(role);
+    when(movieRepository.save(movie)).thenReturn(movie);
+    when(movieRepository.findMovieDetailsViewById(movie.getId()))
+        .thenReturn(Optional.of(movieDetailsView));
 
-        assertEquals(movieDetailsView, result);
-    }
+    var result = movieService.create(movieRequest);
+
+    assertEquals(movieDetailsView, result);
+    verify(movieRepository).save(movie);
+    verify(minioService).uploadFile(MOVIE_POSTERS_BUCKET, movieRequest.imageUrl());
+    verify(minioService).uploadFile(MOVIE_TRAILERS_BUCKET, movieRequest.trailerUrl());
+    verify(movieMapper).toDocument(movieRequest);
+    verify(movieRepository).findMovieDetailsViewById(movie.getId());
+    verify(roleMapper).toDocument(roleRequest);
+    verify(roleRepository).save(role); // Ensure this is invoked
+}
 
     @Test
     void getAllMovies_returnsPageOfMovieSimpleView() {
