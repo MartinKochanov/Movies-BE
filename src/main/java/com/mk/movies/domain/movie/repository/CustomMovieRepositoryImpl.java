@@ -1,17 +1,17 @@
 package com.mk.movies.domain.movie.repository;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
@@ -24,31 +24,40 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
 
     @Override
     public Optional<MovieDetailsView> findMovieDetailsViewById(ObjectId id) {
+
+        AggregationOperation castLookupWithRoles = context -> new Document("$lookup", new Document()
+            .append("from", "MovieCrewMembers")
+            .append("let", new Document("castIds", "$castIds"))
+            .append("pipeline", List.of(
+                new Document("$match",
+                    new Document("$expr", new Document("$in", List.of("$_id", "$$castIds")))),
+                new Document("$lookup", new Document()
+                    .append("from", "Roles")
+                    .append("localField", "_id")
+                    .append("foreignField", "castId")
+                    .append("as", "roles")),
+                new Document("$unwind",
+                    new Document("path", "$roles").append("preserveNullAndEmptyArrays", true)),
+                new Document("$match", new Document("roles.movieId", id)),
+                new Document("$group", new Document("_id", "$_id")
+                    .append("firstName", new Document("$first", "$firstName"))
+                    .append("lastName", new Document("$first", "$lastName"))
+                    .append("imageUrl", new Document("$first", "$imageUrl"))
+                    .append("role", new Document("$first", "$roles.name"))),
+                new Document("$project", new Document("firstName", 1)
+                    .append("lastName", 1)
+                    .append("imageUrl", 1)
+                    .append("role", 1))
+            ))
+            .append("as", "cast")
+        );
+
         var aggregation = newAggregation(
             match(Criteria.where("_id").is(id)),
-
-            lookup("MovieCrewMembers", "castIds", "_id", "cast"),
-            lookup("Roles", "cast.rolesIds", "_id", "castRoles"),
-            unwind("cast", true),
-            unwind("castRoles", true),
-            match(Criteria.where("castRoles.movieId").is(id)), // Filter roles by movieId
-            group("cast._id")
-                .first("cast.firstName").as("firstName")
-                .first("cast.lastName").as("lastName")
-                .first("cast.imageUrl").as("imageUrl")
-                .push("castRoles.name").as("roles"), // Collect role names
-            project("firstName", "lastName", "imageUrl", "roles"),
-
-            // Repeat similar steps for directedBy, producers, and writers if needed
+            castLookupWithRoles,
             lookup("MovieCrewMembers", "directedByIds", "_id", "directedBy"),
             lookup("MovieCrewMembers", "producersIds", "_id", "producers"),
-            lookup("MovieCrewMembers", "writersIds", "_id", "writers"),
-
-            project(
-                "id", "title", "duration", "releaseYear",
-                "genres", "plot", "imageUrl", "trailerUrl", "filmStudio",
-                "basedOn", "series", "cast", "directedBy", "producers", "writers"
-            )
+            lookup("MovieCrewMembers", "writersIds", "_id", "writers")
         );
 
         AggregationResults<MovieDetailsView> results = mongoTemplate
@@ -56,5 +65,6 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
 
         return Optional.ofNullable(results.getUniqueMappedResult());
     }
+
 
 }
