@@ -65,6 +65,4 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
 
         return Optional.ofNullable(results.getUniqueMappedResult());
     }
-
-
 }
