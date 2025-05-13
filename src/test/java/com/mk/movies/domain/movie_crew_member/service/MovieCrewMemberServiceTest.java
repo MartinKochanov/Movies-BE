@@ -12,6 +12,7 @@ import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberUpdateRequest;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberView;
 import com.mk.movies.domain.movie_crew_member.repository.MovieCrewMemberRepository;
 import com.mk.movies.domain.role.document.Role;
+import com.mk.movies.domain.role.dto.RoleView;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import com.mk.movies.infrastructure.mappers.MovieCrewMemberMapper;
 import com.mk.movies.infrastructure.minio.MinioService;
@@ -49,15 +50,21 @@ class MovieCrewMemberServiceTest {
     private MovieCrewMemberUpdateRequest movieCrewMemberUpdateRequest;
     private MovieCrewMemberView movieCrewMemberView;
     private Role role;
+    private RoleView roleView;
 
     @BeforeEach
     void setUp() {
-        Role role = new Role();
+        role = new Role();
 
         role.setId(new ObjectId());
         role.setName("Role");
         role.setCastId(new ObjectId());
         role.setMovieId(new ObjectId());
+
+        roleView = new RoleView(
+            role.getId().toHexString(),
+            role.getName()
+        );
 
         movieCrewMember = new MovieCrewMember();
         movieCrewMember.setId(new ObjectId());
@@ -83,7 +90,7 @@ class MovieCrewMemberServiceTest {
             "Name",
             "Role",
             "http://localhost:8080/image.jpg",
-            role.getName()
+            roleView
         );
     }
 

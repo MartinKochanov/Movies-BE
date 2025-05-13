@@ -26,32 +26,36 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
     public Optional<MovieDetailsView> findMovieDetailsViewById(ObjectId id) {
 
         AggregationOperation castLookupWithRoles = context -> new Document("$lookup", new Document()
-            .append("from", "MovieCrewMembers")
-            .append("let", new Document("castIds", "$castIds"))
-            .append("pipeline", List.of(
-                new Document("$match",
-                    new Document("$expr", new Document("$in", List.of("$_id", "$$castIds")))),
-                new Document("$lookup", new Document()
-                    .append("from", "Roles")
-                    .append("localField", "_id")
-                    .append("foreignField", "castId")
-                    .append("as", "roles")),
-                new Document("$unwind",
-                    new Document("path", "$roles").append("preserveNullAndEmptyArrays", true)),
-                new Document("$match", new Document("roles.movieId", id)),
-                new Document("$group", new Document("_id", "$_id")
-                    .append("firstName", new Document("$first", "$firstName"))
-                    .append("lastName", new Document("$first", "$lastName"))
-                    .append("imageUrl", new Document("$first", "$imageUrl"))
-                    .append("role", new Document("$first", "$roles.name"))),
-                new Document("$project", new Document("firstName", 1)
-                    .append("lastName", 1)
-                    .append("imageUrl", 1)
-                    .append("role", 1))
-            ))
-            .append("as", "cast")
-        );
-
+    .append("from", "MovieCrewMembers")
+    .append("let", new Document("castIds", "$castIds"))
+    .append("pipeline", List.of(
+        new Document("$match",
+            new Document("$expr", new Document("$in", List.of("$_id", "$$castIds")))),
+        new Document("$lookup", new Document()
+            .append("from", "Roles")
+            .append("localField", "_id")
+            .append("foreignField", "castId")
+            .append("as", "roles")),
+        new Document("$unwind",
+            new Document("path", "$roles").append("preserveNullAndEmptyArrays", true)),
+        new Document("$match", new Document("roles.movieId", id)),
+        new Document("$group", new Document("_id", "$_id")
+            .append("firstName", new Document("$first", "$firstName"))
+            .append("lastName", new Document("$first", "$lastName"))
+            .append("imageUrl", new Document("$first", "$imageUrl"))
+            .append("role", new Document("$first", new Document()
+                .append("id", "$roles._id") // Ensure the role ID is included
+                .append("name", "$roles.name")))),
+        new Document("$project", new Document("id", "$_id")
+            .append("firstName", 1)
+            .append("lastName", 1)
+            .append("imageUrl", 1)
+            .append("role", new Document()
+                .append("_id", "$role.id") // Explicitly project the role ID
+                .append("name", "$role.name")))
+    ))
+    .append("as", "cast")
+);
         var aggregation = newAggregation(
             match(Criteria.where("_id").is(id)),
             castLookupWithRoles,
