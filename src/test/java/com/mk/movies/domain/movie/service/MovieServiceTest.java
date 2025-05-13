@@ -18,6 +18,7 @@ import com.mk.movies.domain.movie.repository.MovieRepository;
 import com.mk.movies.domain.role.document.Role;
 import com.mk.movies.domain.role.dto.RoleRequest;
 import com.mk.movies.domain.role.repository.RoleRepository;
+import com.mk.movies.domain.role.service.RoleService;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import com.mk.movies.infrastructure.mappers.MovieMapper;
 import com.mk.movies.infrastructure.mappers.RoleMapper;
@@ -54,6 +55,9 @@ class MovieServiceTest {
     @Mock
     private RoleRepository roleRepository;
 
+    @Mock
+    private RoleService roleService;
+
     @InjectMocks
     private MovieService movieService;
 
@@ -80,7 +84,7 @@ class MovieServiceTest {
         role.setCastId(new ObjectId());
         role.setMovieId(new ObjectId());
 
-        when(roleMapper.toDocument(roleRequest)).thenReturn(role);
+        lenient().when(roleMapper.toDocument(roleRequest)).thenReturn(role);
 
         movie = new Movie();
         movie.setId(new ObjectId());
@@ -164,7 +168,7 @@ class MovieServiceTest {
         );
     }
 
-    @Test
+@Test
 void create_returnsMovieDetailsView_whenMovieIsSaved() {
 
     when(movieMapper.toDocument(movieRequest)).thenReturn(movie);
@@ -172,7 +176,7 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
         .thenReturn(movie.getImageUrl());
     when(minioService.uploadFile(MOVIE_TRAILERS_BUCKET, movieRequest.trailerUrl()))
         .thenReturn(movie.getTrailerUrl());
-    when(roleMapper.toDocument(roleRequest)).thenReturn(role);
+    when(roleService.create(roleRequest, movie.getId())).thenReturn(role);
     when(movieRepository.save(movie)).thenReturn(movie);
     when(movieRepository.findMovieDetailsViewById(movie.getId()))
         .thenReturn(Optional.of(movieDetailsView));
@@ -185,8 +189,7 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
     verify(minioService).uploadFile(MOVIE_TRAILERS_BUCKET, movieRequest.trailerUrl());
     verify(movieMapper).toDocument(movieRequest);
     verify(movieRepository).findMovieDetailsViewById(movie.getId());
-    verify(roleMapper).toDocument(roleRequest);
-    verify(roleRepository).save(role); // Ensure this is invoked
+    verify(roleService).create(roleRequest, movie.getId());
 }
 
     @Test
