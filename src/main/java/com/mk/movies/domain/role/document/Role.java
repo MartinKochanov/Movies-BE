@@ -1,6 +1,5 @@
-package com.mk.movies.domain.movie_crew_member.document;
+package com.mk.movies.domain.role.document;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,15 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "MovieCrewMembers")
-public class MovieCrewMember {
+@AllArgsConstructor
+@Document(collection = "Roles")
+public class Role {
 
     @Id
     private ObjectId id;
-    private String firstName;
-    private String lastName;
-    private String imageUrl;
-    private List<ObjectId> rolesIds;
+    private String name;
+    private ObjectId castId;
+    private ObjectId movieId;
 }

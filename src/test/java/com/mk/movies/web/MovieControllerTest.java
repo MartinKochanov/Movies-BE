@@ -11,6 +11,7 @@ import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
 import com.mk.movies.domain.movie.enums.Genre;
 import com.mk.movies.domain.movie.repository.MovieRepository;
+import com.mk.movies.domain.role.dto.RoleRequest;
 import com.mk.movies.infrastructure.minio.MinioService;
 import java.util.List;
 import org.bson.types.ObjectId;
@@ -37,6 +38,8 @@ class MovieControllerTest {
     private static Movie movie;
     private static MovieRequest movieRequest;
     private static MovieUpdateRequest movieUpdateRequest;
+    private static RoleRequest roleRequest;
+
     @Mock
     MinioService minioService;
     @Autowired
@@ -46,6 +49,11 @@ class MovieControllerTest {
 
     @BeforeEach
     void setUp() {
+        roleRequest = new RoleRequest(
+            "Role",
+            new ObjectId(),
+            new ObjectId()
+        );
 
         movieRequest = new MovieRequest(
             "Title",
@@ -61,7 +69,8 @@ class MovieControllerTest {
             List.of(new ObjectId()),
             List.of(new ObjectId()),
             List.of(new ObjectId()),
-            List.of(new ObjectId())
+            List.of(new ObjectId()),
+            List.of(roleRequest)
         );
 
         movieUpdateRequest = new MovieUpdateRequest(
@@ -117,7 +126,9 @@ class MovieControllerTest {
                 .param("castIds", String.valueOf(movieRequest.castIds().get(0)))
                 .param("directedByIds", String.valueOf(movieRequest.directedByIds().get(0)))
                 .param("producersIds", String.valueOf(movieRequest.producersIds().get(0)))
-                .param("writersIds", String.valueOf(movieRequest.writersIds().get(0))))
+                .param("writersIds", String.valueOf(movieRequest.writersIds().get(0)))
+                .param("roles[0].name", roleRequest.name())
+                .param("roles[0].castId", roleRequest.castId().toHexString()))
             .andExpect(status().isCreated());
     }
 
