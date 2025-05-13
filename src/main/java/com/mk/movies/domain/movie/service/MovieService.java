@@ -3,7 +3,6 @@ package com.mk.movies.domain.movie.service;
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_POSTERS_BUCKET;
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_TRAILERS_BUCKET;
 import static com.mk.movies.infrastructure.minio.MinioUtil.extractFileName;
-import static com.mk.movies.infrastructure.util.ObjectIdUtil.validateObjectId;
 
 import com.mk.movies.domain.movie.document.Movie;
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
@@ -52,14 +51,12 @@ public class MovieService {
         return movieRepository.findAll(pageable).map(movieMapper::toSimpleView);
     }
 
-    public MovieDetailsView getMovieById(String id) {
-        validateObjectId(id);
-        return getMovieDetailsViewById(new ObjectId(id));
+    public MovieDetailsView getMovieById(ObjectId id) {
+        return getMovieDetailsViewById(id);
     }
 
-    public MovieDetailsView updateMovie(String id, MovieUpdateRequest movieUpdateRequest) {
-        validateObjectId(id);
-        var movie = getMovie(new ObjectId(id));
+    public MovieDetailsView updateMovie(ObjectId id, MovieUpdateRequest movieUpdateRequest) {
+        var movie = getMovie(id);
 
         if (movieUpdateRequest.imageUrl() != null && !movieUpdateRequest.imageUrl().isEmpty()) {
             String oldImageName = extractFileName(movie.getImageUrl());
@@ -86,17 +83,15 @@ public class MovieService {
         return getMovieDetailsViewById(movie.getId());
     }
 
-    public void deleteMovie(String id) {
-        validateObjectId(id);
-        var objectId = new ObjectId(id);
-        var movie = getMovie(objectId);
+    public void deleteMovie(ObjectId id) {
+        var movie = getMovie(id);
 
         String imageName = extractFileName(movie.getImageUrl());
         String trailerName = extractFileName(movie.getTrailerUrl());
 
         minioService.deleteFile(MOVIE_POSTERS_BUCKET, imageName);
         minioService.deleteFile(MOVIE_TRAILERS_BUCKET, trailerName);
-        movieRepository.deleteById(objectId);
+        movieRepository.deleteById(id);
     }
 
     public Movie getMovie(ObjectId id) {
