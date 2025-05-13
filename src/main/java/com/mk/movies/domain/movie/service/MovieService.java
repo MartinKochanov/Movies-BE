@@ -11,10 +11,9 @@ import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
 import com.mk.movies.domain.movie.repository.MovieRepository;
 import com.mk.movies.domain.role.dto.RoleRequest;
-import com.mk.movies.domain.role.repository.RoleRepository;
+import com.mk.movies.domain.role.service.RoleService;
 import com.mk.movies.infrastructure.exceptions.ResourceNotFoundException;
 import com.mk.movies.infrastructure.mappers.MovieMapper;
-import com.mk.movies.infrastructure.mappers.RoleMapper;
 import com.mk.movies.infrastructure.minio.MinioService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieMapper movieMapper;
     private final MinioService minioService;
-    private final RoleMapper roleMapper;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     public MovieDetailsView create(MovieRequest movieRequest) {
         var imageUrl = minioService.uploadFile(MOVIE_POSTERS_BUCKET, movieRequest.imageUrl());
@@ -106,9 +104,7 @@ public class MovieService {
 
     private void createRolesForMovieMembers(List<RoleRequest> roles, ObjectId movieId) {
         for (var roleRequest : roles) {
-            var role = roleMapper.toDocument(roleRequest);
-            role.setMovieId(movieId);
-            roleRepository.save(role);
+            roleService.create(roleRequest, movieId);
         }
     }
 }
