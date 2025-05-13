@@ -2,7 +2,6 @@ package com.mk.movies.domain.movie_crew_member.service;
 
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_CREW_IMAGES_BUCKET;
 import static com.mk.movies.infrastructure.minio.MinioUtil.extractFileName;
-import static com.mk.movies.infrastructure.util.ObjectIdUtil.validateObjectId;
 
 import com.mk.movies.domain.movie_crew_member.document.MovieCrewMember;
 import com.mk.movies.domain.movie_crew_member.dto.MovieCrewMemberRequest;
@@ -40,16 +39,14 @@ public class MovieCrewMemberService {
         return movieCrewMemberRepository.findAll(pageable).map(movieCrewMemberMapper::toView);
     }
 
-    public MovieCrewMemberView getById(String id) {
-        validateObjectId(id);
-        return movieCrewMemberMapper.toView(getMovieCrewMember(new ObjectId(id)));
+    public MovieCrewMemberView getById(ObjectId id) {
+        return movieCrewMemberMapper.toView(getMovieCrewMember(id));
     }
 
-    public MovieCrewMemberView update(String id,
+    public MovieCrewMemberView update(ObjectId id,
         MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
-        validateObjectId(id);
 
-        var movieCrewMember = getMovieCrewMember(new ObjectId(id));
+        var movieCrewMember = getMovieCrewMember(id);
 
         if (movieCrewMemberRequest.image() != null && !movieCrewMemberRequest.image().isEmpty()) {
             var oldFileName = extractFileName(movieCrewMember.getImageUrl());
@@ -67,16 +64,14 @@ public class MovieCrewMemberService {
         return movieCrewMemberMapper.toView(movieCrewMember);
     }
 
-    public void delete(String id) {
-        validateObjectId(id);
+    public void delete(ObjectId id) {
 
-        var objectId = new ObjectId(id);
-        var movieCrewMember = getMovieCrewMember(objectId);
+        var movieCrewMember = getMovieCrewMember(id);
 
         String fileName = extractFileName(movieCrewMember.getImageUrl());
 
         minioService.deleteFile(MOVIE_CREW_IMAGES_BUCKET, fileName);
-        movieCrewMemberRepository.deleteById(objectId);
+        movieCrewMemberRepository.deleteById(id);
     }
 
     private MovieCrewMember getMovieCrewMember(ObjectId id) {
