@@ -33,6 +33,4 @@ public class Movie {
     private List<ObjectId> directedByIds;
     private List<ObjectId> producersIds;
     private List<ObjectId> writersIds;
-
-    //TODO: Transition into embedded documents for roles
 }
