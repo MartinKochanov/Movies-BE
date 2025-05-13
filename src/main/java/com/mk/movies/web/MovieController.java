@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,7 @@ public class MovieController {
         @ApiResponse(responseCode = "404", description = "Movie not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<MovieDetailsView> getMovieById(@PathVariable String id) {
+    public ResponseEntity<MovieDetailsView> getMovieById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(movieService.getMovieById(id));
     }
 
@@ -74,7 +75,7 @@ public class MovieController {
         @ApiResponse(responseCode = "404", description = "Movie not found")
     })
     @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    public ResponseEntity<MovieDetailsView> update(@PathVariable String id,
+    public ResponseEntity<MovieDetailsView> update(@PathVariable ObjectId id,
         @ModelAttribute @Valid MovieUpdateRequest movie) {
         return ResponseEntity.ok(movieService.updateMovie(id, movie));
     }
@@ -86,7 +87,7 @@ public class MovieController {
         @ApiResponse(responseCode = "404", description = "Movie not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable ObjectId id) {
         movieService.deleteMovie(id);
         return ResponseEntity
             .status(NO_CONTENT)

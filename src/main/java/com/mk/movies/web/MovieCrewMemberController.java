@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "404", description = "Movie crew member not found")
     })
     @GetMapping("/{id}")
-    private ResponseEntity<MovieCrewMemberView> getMovieCrewMemberById(@PathVariable String id) {
+    private ResponseEntity<MovieCrewMemberView> getMovieCrewMemberById(@PathVariable ObjectId id) {
         return ResponseEntity.ok().body(movieCrewMemberService.getById(id));
     }
 
@@ -73,7 +74,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "404", description = "Movie crew member not found")
     })
     @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    private ResponseEntity<MovieCrewMemberView> updateMovieCrewMember(@PathVariable String id,
+    private ResponseEntity<MovieCrewMemberView> updateMovieCrewMember(@PathVariable ObjectId id,
         @ModelAttribute @Valid MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
         return ResponseEntity.ok().body(movieCrewMemberService.update(id, movieCrewMemberRequest));
     }
@@ -85,7 +86,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "404", description = "Movie crew member not found")
     })
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> deleteMovieCrewMember(@PathVariable String id) {
+    private ResponseEntity<Void> deleteMovieCrewMember(@PathVariable ObjectId id) {
         movieCrewMemberService.delete(id);
         return ResponseEntity.status(NO_CONTENT).build();
     }

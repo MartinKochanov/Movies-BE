@@ -126,7 +126,7 @@ class MovieCrewMemberServiceTest {
             Optional.of(movieCrewMember));
         when(movieCrewMemberMapper.toView(movieCrewMember)).thenReturn(movieCrewMemberView);
 
-        var result = movieCrewMemberService.getById(movieCrewMember.getId().toHexString());
+        var result = movieCrewMemberService.getById(movieCrewMember.getId());
 
         assertEquals(movieCrewMemberView, result);
     }
@@ -137,7 +137,7 @@ class MovieCrewMemberServiceTest {
             Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-            () -> movieCrewMemberService.getById(movieCrewMember.getId().toHexString()));
+            () -> movieCrewMemberService.getById(movieCrewMember.getId()));
     }
 
     @Test
@@ -146,7 +146,7 @@ class MovieCrewMemberServiceTest {
             Optional.of(movieCrewMember));
         when(movieCrewMemberMapper.toView(movieCrewMember)).thenReturn(movieCrewMemberView);
 
-        var result = movieCrewMemberService.update(movieCrewMember.getId().toHexString(),
+        var result = movieCrewMemberService.update(movieCrewMember.getId(),
             movieCrewMemberUpdateRequest);
 
         assertEquals(movieCrewMemberView, result);
@@ -157,7 +157,7 @@ class MovieCrewMemberServiceTest {
         when(movieCrewMemberRepository.findById(movieCrewMember.getId())).thenReturn(
             Optional.of(movieCrewMember));
 
-        movieCrewMemberService.delete(movieCrewMember.getId().toHexString());
+        movieCrewMemberService.delete(movieCrewMember.getId());
 
         verify(movieCrewMemberRepository).deleteById(movieCrewMember.getId());
         verify(minioService).deleteFile(MOVIE_CREW_IMAGES_BUCKET, "image.jpg");
@@ -169,6 +169,6 @@ class MovieCrewMemberServiceTest {
             Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-            () -> movieCrewMemberService.delete(movieCrewMember.getId().toHexString()));
+            () -> movieCrewMemberService.delete(movieCrewMember.getId()));
     }
 }

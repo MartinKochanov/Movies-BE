@@ -206,7 +206,7 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
         when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(
             Optional.of(movieDetailsView));
 
-        var result = movieService.getMovieById(movie.getId().toHexString());
+        var result = movieService.getMovieById(movie.getId());
 
         assertEquals(movieDetailsView, result);
     }
@@ -216,7 +216,7 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
         when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-            () -> movieService.getMovieById(movie.getId().toHexString()));
+            () -> movieService.getMovieById(movie.getId()));
     }
 
     @Test
@@ -225,7 +225,7 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
         when(movieRepository.findMovieDetailsViewById(movie.getId())).thenReturn(
             Optional.of(movieDetailsView));
 
-        var result = movieService.updateMovie(movie.getId().toHexString(), movieUpdateRequest);
+        var result = movieService.updateMovie(movie.getId(), movieUpdateRequest);
 
         assertEquals(movieDetailsView, result);
     }
@@ -234,7 +234,7 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
     void deleteMovie_deletesMovie_whenMovieExists() {
         when(movieRepository.findById(movie.getId())).thenReturn(Optional.of(movie));
 
-        movieService.deleteMovie(movie.getId().toHexString());
+        movieService.deleteMovie(movie.getId());
 
         verify(movieRepository).deleteById(movie.getId());
         verify(minioService).deleteFile(MOVIE_POSTERS_BUCKET, "image.jpg");
@@ -246,6 +246,6 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
         when(movieRepository.findById(movie.getId())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-            () -> movieService.deleteMovie(movie.getId().toHexString()));
+            () -> movieService.deleteMovie(movie.getId()));
     }
 }
