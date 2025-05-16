@@ -11,6 +11,7 @@ public record MovieDetailsView(
     Integer releaseYear,
     List<Genre> genres,
     String plot,
+    String tagline,
     String imageUrl,
     String trailerUrl,
     String filmStudio,

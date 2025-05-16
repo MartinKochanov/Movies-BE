@@ -12,7 +12,7 @@ import org.bson.types.ObjectId;
 import org.springframework.web.multipart.MultipartFile;
 
 public record MovieRequest(
-    @NotBlank(message = "Title ìs required")
+    @NotBlank(message = "Title is required")
     String title,
 
     @NotNull(message = "Duration is required")
@@ -29,6 +29,9 @@ public record MovieRequest(
 
     @NotBlank(message = "Plot is required")
     String plot,
+
+    @NotBlank(message = "Tagline is required")
+    String tagline,
 
     @NotNull(message = "Image is required")
     MultipartFile imageUrl,

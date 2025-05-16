@@ -31,7 +31,7 @@ public class MongoDBSchemaConfig {
         Document moviesJsonSchema = new Document("$jsonSchema",
             new Document("bsonType", "object")
                 .append("required", List.of("_id", "title", "duration", "releaseYear", "genres",
-                    "plot", "filmStudio", "castIds", "directedByIds", "producersIds", "writersIds",
+                    "plot", "tagline","filmStudio", "castIds", "directedByIds", "producersIds", "writersIds",
                     "imageUrl", "trailerUrl"))
                 .append("properties", new Document()
                     .append("_id", new Document("bsonType", "objectId").append("description",
@@ -50,6 +50,8 @@ public class MongoDBSchemaConfig {
                         .append("description", "At least one genre must be provided"))
                     .append("plot", new Document("bsonType", "string").append("description",
                         "Plot is required"))
+                    .append("tagline", new Document("bsonType", "string")
+                        .append("description", "Tagline is required"))
                     .append("imageUrl", new Document("bsonType", "string")
                         .append("pattern", "^(http|https)://.*$")
                         .append("description", "Must be a valid URL"))

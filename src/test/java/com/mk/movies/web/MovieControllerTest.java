@@ -61,6 +61,7 @@ class MovieControllerTest {
             2023,
             List.of(Genre.ACTION),
             "Plot",
+            "Tagline",
             new MockMultipartFile("image", "image.jpg", "image/jpeg", new byte[0]),
             new MockMultipartFile("trailer", "trailer.mp4", "video/mp4", new byte[0]),
             "Film Studio",
@@ -79,6 +80,7 @@ class MovieControllerTest {
             2024,
             List.of(Genre.DRAMA),
             "Updated Plot",
+            "Updated Tagline",
             new MockMultipartFile("image", "updated_image.jpg", "image/jpeg", new byte[0]),
             new MockMultipartFile("trailer", "updated_trailer.mp4", "video/mp4", new byte[0]),
             "Updated Film Studio",
@@ -120,6 +122,7 @@ class MovieControllerTest {
                 .param("releaseYear", String.valueOf(movieRequest.releaseYear()))
                 .param("genres", String.valueOf(movieRequest.genres().get(0)))
                 .param("plot", movieRequest.plot())
+                .param("tagline", movieRequest.tagline())
                 .param("filmStudio", movieRequest.filmStudio())
                 .param("basedOn", movieRequest.basedOn())
                 .param("series", String.valueOf(movieRequest.series()))
@@ -140,29 +143,31 @@ class MovieControllerTest {
 
     @ParameterizedTest
     @CsvSource({
-        ", 120, 2023, 'ACTION', Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        ", 120, 2023, 'ACTION', Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing title
-        "Title, , 2023, 'ACTION', Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        "Title, , 2023, 'ACTION', Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing duration
-        "Title, 120, , 'ACTION', Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        "Title, 120, , 'ACTION', Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing release year
-        "Title, 120, 2023, , Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        "Title, 120, 2023, , Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing genres
-        "Title, 120, 2023, 'ACTION', , image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        "Title, 120, 2023, 'ACTION', , tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing plot
-        "Title, 120, 2023, 'ACTION', Plot, , trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        "Title, 120, 2023, 'ACTION', Plot, ,image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        // Missing tagline
+        "Title, 120, 2023, 'ACTION', Plot, tagline, , trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing image
-        "Title, 120, 2023, 'ACTION', Plot, image.jpg, , 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        "Title, 120, 2023, 'ACTION', Plot, tagline, image.jpg, , 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing trailer
-        "Title, 120, 2023, 'ACTION', Plot, image.jpg, trailer.mp4, , 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
+        "Title, 120, 2023, 'ACTION', Plot, tagline, image.jpg, trailer.mp4, , 'True Story', false, 'castId', 'directedById', 'producersId', 'writersId'",
         // Missing film studio
-        "Title, 120, 2023, 'ACTION', Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, '', 'directedById', 'producersId', 'writersId'",
+        "Title, 120, 2023, 'ACTION', Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, '', 'directedById', 'producersId', 'writersId'",
         // Missing cast IDs
-        "Title, 120, 2023, 'ACTION', Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', , 'producersId', 'writersId'",
+        "Title, 120, 2023, 'ACTION', Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', , 'producersId', 'writersId'",
         // Missing directed by IDs
-        "Title, 120, 2023, 'ACTION', Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', , 'writersId'",
+        "Title, 120, 2023, 'ACTION', Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', , 'writersId'",
         // Missing producers IDs
-        "Title, 120, 2023, 'ACTION', Plot, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', ''",
+        "Title, 120, 2023, 'ACTION', Plot, tagline, image.jpg, trailer.mp4, 'Film Studio', 'True Story', false, 'castId', 'directedById', 'producersId', ''",
         // Missing writers IDs
     })
     void create_returns_bad_request_givenInvalidData(
@@ -171,6 +176,7 @@ class MovieControllerTest {
         Integer releaseYear,
         String genres,
         String plot,
+        String tagline,
         String imageUrl,
         String trailerUrl,
         String filmStudio,
@@ -193,6 +199,7 @@ class MovieControllerTest {
                 .param("releaseYear", releaseYear != null ? String.valueOf(releaseYear) : "")
                 .param("genres", genres)
                 .param("plot", plot)
+                .param("tagline", tagline)
                 .param("filmStudio", filmStudio)
                 .param("basedOn", basedOn)
                 .param("series", series != null ? String.valueOf(series) : "")

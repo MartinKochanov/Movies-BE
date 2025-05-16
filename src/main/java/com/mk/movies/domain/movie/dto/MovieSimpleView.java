@@ -6,6 +6,7 @@ import java.util.List;
 public record MovieSimpleView(
     String id,
     String title,
+    String tagline,
     Integer duration,
     Integer releaseYear,
     List<Genre> genres,

@@ -24,6 +24,7 @@ public class Movie {
     private int releaseYear;
     private List<Genre> genres;
     private String plot;
+    private String tagline;
     private String imageUrl;
     private String trailerUrl;
     private String filmStudio;

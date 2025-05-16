@@ -21,6 +21,8 @@ public record MovieUpdateRequest(
 
     String plot,
 
+    String tagline,
+
     MultipartFile imageUrl,
 
     MultipartFile trailerUrl,
