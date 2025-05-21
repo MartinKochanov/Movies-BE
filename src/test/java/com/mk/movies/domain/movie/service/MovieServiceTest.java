@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.mk.movies.domain.movie.document.Movie;
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
+import com.mk.movies.domain.movie.dto.MovieFilter;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
@@ -66,11 +67,13 @@ class MovieServiceTest {
     private MovieUpdateRequest movieUpdateRequest;
     private MovieDetailsView movieDetailsView;
     private MovieSimpleView movieSimpleView;
+    private MovieFilter filter;
     private RoleRequest roleRequest;
     private Role role;
 
     @BeforeEach
     void setUp() {
+        filter = new MovieFilter();
 
         roleRequest = new RoleRequest(
             "Role",
@@ -199,10 +202,10 @@ void create_returnsMovieDetailsView_whenMovieIsSaved() {
     @Test
     void getAllMovies_returnsPageOfMovieSimpleView() {
         Page<Movie> moviePage = new PageImpl<>(List.of(movie));
-        when(movieRepository.findAll(PageRequest.of(0, 10))).thenReturn(moviePage);
+        when(movieRepository.findAll(filter, PageRequest.of(0, 10))).thenReturn(moviePage);
         when(movieMapper.toSimpleView(movie)).thenReturn(movieSimpleView);
 
-        var result = movieService.getAllMovies(PageRequest.of(0, 10));
+        var result = movieService.getAllMovies(PageRequest.of(0, 10), filter);
 
         assertEquals(1, result.getTotalElements());
         assertEquals(movieSimpleView, result.getContent().get(0));

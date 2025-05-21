@@ -6,6 +6,7 @@ import static com.mk.movies.infrastructure.minio.MinioUtil.extractFileName;
 
 import com.mk.movies.domain.movie.document.Movie;
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
+import com.mk.movies.domain.movie.dto.MovieFilter;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
@@ -45,8 +46,8 @@ public class MovieService {
         return getMovieDetailsViewById(movie.getId());
     }
 
-    public Page<MovieSimpleView> getAllMovies(Pageable pageable) {
-        return movieRepository.findAll(pageable).map(movieMapper::toSimpleView);
+    public Page<MovieSimpleView> getAllMovies(Pageable pageable, MovieFilter filter) {
+        return movieRepository.findAll(filter,pageable).map(movieMapper::toSimpleView);
     }
 
     public MovieDetailsView getMovieById(ObjectId id) {

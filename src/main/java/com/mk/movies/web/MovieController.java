@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import com.mk.movies.domain.movie.dto.MovieDetailsView;
+import com.mk.movies.domain.movie.dto.MovieFilter;
 import com.mk.movies.domain.movie.dto.MovieRequest;
 import com.mk.movies.domain.movie.dto.MovieSimpleView;
 import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
@@ -53,8 +54,8 @@ public class MovieController {
         @ApiResponse(responseCode = "200", description = "Movies retrieved"),
     })
     @GetMapping
-    public ResponseEntity<Page<MovieSimpleView>> getAllMovies(Pageable pageable) {
-        return ResponseEntity.ok(movieService.getAllMovies(pageable));
+    public ResponseEntity<Page<MovieSimpleView>> getAllMovies(Pageable pageable, MovieFilter filter) {
+        return ResponseEntity.ok(movieService.getAllMovies(pageable, filter));
     }
 
     @Operation(summary = "Get movie details", description = "Retrieves detailed information about a specific movie.")
