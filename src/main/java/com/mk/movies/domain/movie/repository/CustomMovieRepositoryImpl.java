@@ -92,6 +92,10 @@ public class CustomMovieRepositoryImpl implements CustomMovieRepository {
             query.addCriteria(Criteria.where("releaseYear").is(filter.getReleaseYear()));
         }
 
+        if (filter.getIsSeries() != null) {
+            query.addCriteria(Criteria.where("series").is(filter.getIsSeries()));
+        }
+
         long total = mongoTemplate.count(query, Movie.class);
 
         query.with(pageable);

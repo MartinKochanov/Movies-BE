@@ -10,7 +10,9 @@ public record MovieSimpleView(
     Integer duration,
     Integer releaseYear,
     List<Genre> genres,
-    String imageUrl
+    Boolean series,
+    String imageUrl,
+    String trailerUrl
 ) {
 
 }

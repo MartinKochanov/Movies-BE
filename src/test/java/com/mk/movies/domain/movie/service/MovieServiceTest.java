@@ -171,7 +171,9 @@ class MovieServiceTest {
             120,
             2023,
             List.of(Genre.ACTION),
-            "http://localhost:8080/image.jpg"
+            false,
+            "http://localhost:8080/image.jpg",
+            "http://localhost:8080/trailer.mp4"
         );
     }
 

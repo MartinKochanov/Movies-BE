@@ -15,4 +15,5 @@ public class MovieFilter {
     private String title;
     private List<Genre> genres;
     private Integer releaseYear;
+    private Boolean isSeries;
 }
