@@ -1,4 +1,4 @@
-package com.mk.movies.infrastructure.config;
+package com.mk.movies.infrastructure.mongo;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;

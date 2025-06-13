@@ -1,4 +1,4 @@
-package com.mk.movies.infrastructure.config;
+package com.mk.movies.infrastructure.minio;
 
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;

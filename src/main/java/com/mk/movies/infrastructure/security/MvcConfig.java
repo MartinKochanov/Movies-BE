@@ -1,4 +1,4 @@
-package com.mk.movies.infrastructure.config;
+package com.mk.movies.infrastructure.security;
 
 import com.mk.movies.infrastructure.converters.StringToObjectIdConverter;
 import org.springframework.context.annotation.Configuration;
