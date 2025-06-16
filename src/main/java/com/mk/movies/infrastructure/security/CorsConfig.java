@@ -1,4 +1,4 @@
-package com.mk.movies.infrastructure.config;
+package com.mk.movies.infrastructure.security;
 
 import java.util.List;
 import org.springframework.context.annotation.Bean;

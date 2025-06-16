@@ -60,6 +60,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.passay</groupId>
+      <artifactId>passay</artifactId>
+      <version>1.6.4</version>
+    </dependency>
+
+    <dependency>
       <artifactId>minio</artifactId>
       <groupId>io.minio</groupId>
       <version>8.5.17</version>

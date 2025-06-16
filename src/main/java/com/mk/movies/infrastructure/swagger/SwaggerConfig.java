@@ -1,4 +1,4 @@
-package com.mk.movies.infrastructure.config;
+package com.mk.movies.infrastructure.swagger;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
