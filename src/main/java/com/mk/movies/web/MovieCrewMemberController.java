@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Movie Crew Members", description = "API for managing movie crew members")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/movie-crew-members")
+@RequestMapping("/api/v1/movie-crew-members")
 public class MovieCrewMemberController {
 
     private final MovieCrewMemberService movieCrewMemberService;

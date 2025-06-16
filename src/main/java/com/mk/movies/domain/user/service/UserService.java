@@ -27,7 +27,7 @@ public class UserService {
     }
 
     public Page<UserView> getUsers(Pageable pageable) {
-        return  userRepository.findAll(pageable).map(userMapper::toView);
+        return userRepository.findAll(pageable).map(userMapper::toView);
     }
 
     public UserView getUserById(ObjectId id) {
@@ -54,5 +54,11 @@ public class UserService {
             throw new ResourceNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("User not found with email: " + email));
     }
 }

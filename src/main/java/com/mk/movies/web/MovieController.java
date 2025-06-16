@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Movies", description = "API for managing movies")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/movies")
+@RequestMapping("/api/v1/movies")
 public class MovieController {
 
     private final MovieService movieService;

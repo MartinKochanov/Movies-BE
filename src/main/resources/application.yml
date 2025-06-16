@@ -24,3 +24,6 @@ logging:
                   mongodb:
                       core:
                           MongoTemplate: DEBUG
+jwt:
+    secret: ${JWT_SECRET}
+    expiration-time: 86400000
