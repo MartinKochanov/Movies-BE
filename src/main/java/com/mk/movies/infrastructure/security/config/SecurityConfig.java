@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,7 +35,6 @@ public class SecurityConfig {
         "/swagger-ui/**",
         "/webjars/**",
         "/swagger-ui.html",
-        "/api/v1/auth",
     };
 
     private final JwtRequestFilter jwtRequestFilter;
@@ -49,6 +49,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authRequests ->
                 authRequests
                     .requestMatchers(WHITE_LIST).permitAll()
+                    .requestMatchers(HttpMethod.POST,"/api/v1/auth", "/api/v1/users").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(session ->
