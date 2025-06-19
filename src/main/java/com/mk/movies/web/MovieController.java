@@ -19,6 +19,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -42,6 +43,7 @@ public class MovieController {
         @ApiResponse(responseCode = "201", description = "Movie created"),
         @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<MovieDetailsView> create(@ModelAttribute @Valid MovieRequest movie) {
         return ResponseEntity
@@ -75,6 +77,7 @@ public class MovieController {
         @ApiResponse(responseCode = "400", description = "Invalid input data or object ID"),
         @ApiResponse(responseCode = "404", description = "Movie not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<MovieDetailsView> update(@PathVariable ObjectId id,
         @ModelAttribute @Valid MovieUpdateRequest movie) {
@@ -87,6 +90,7 @@ public class MovieController {
         @ApiResponse(responseCode = "400", description = "Invalid object ID"),
         @ApiResponse(responseCode = "404", description = "Movie not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable ObjectId id) {
         movieService.deleteMovie(id);

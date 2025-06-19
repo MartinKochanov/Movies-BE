@@ -1,6 +1,9 @@
+// src/main/java/com/mk/movies/infrastructure/security/config/SecurityConfig.java
 package com.mk.movies.infrastructure.security.config;
 
 import com.mk.movies.infrastructure.security.filters.JwtRequestFilter;
+import com.mk.movies.infrastructure.security.service.JwtService;
+import com.mk.movies.infrastructure.security.service.UserDetailsServiceImpl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,11 +40,15 @@ public class SecurityConfig {
         "/swagger-ui.html",
     };
 
-    private final JwtRequestFilter jwtRequestFilter;
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public JwtRequestFilter jwtRequestFilter(UserDetailsServiceImpl userDetailsService, JwtService jwtService) {
+        return new JwtRequestFilter(userDetailsService, jwtService);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
         http
             .cors(cors -> corsConfigurationSource())
             .csrf(AbstractHttpConfigurer::disable)

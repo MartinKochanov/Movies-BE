@@ -11,19 +11,23 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     public void creatUser(UserRequest userRequest) {
 
-        var User = userMapper.toDocument(userRequest);
-        userRepository.save(User);
+        var user = userMapper.toDocument(userRequest);
+        user.setPassword(passwordEncoder.encode(userRequest.password()));
+
+        userRepository.save(user);
     }
 
     public Page<UserView> getUsers(Pageable pageable) {

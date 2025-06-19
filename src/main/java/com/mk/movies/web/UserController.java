@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -50,6 +51,7 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Users retrieved"),
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserView>> getAll(Pageable pageable) {
         return ResponseEntity.ok(userService.getUsers(pageable));
@@ -61,11 +63,14 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "Invalid object ID"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN') or @authorizationService.isAccountOwner(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<UserView> getById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN') or @authorizationService.isAccountOwner(#id)")
     @PatchMapping("/{id}")
     @Operation(summary = "Update user by ID", description = "Update an existing user by their ID. Support partial updates.")
     @ApiResponses(value = {
@@ -83,6 +88,7 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "Invalid object ID or input data"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN') or @authorizationService.isAccountOwner(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable ObjectId id) {
         userService.deleteUser(id);

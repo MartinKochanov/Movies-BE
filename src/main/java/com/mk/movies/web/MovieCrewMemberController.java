@@ -17,6 +17,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,6 +40,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "201", description = "Movie crew member created"),
         @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping(consumes = {"multipart/form-data"})
     private ResponseEntity<MovieCrewMemberView> createMovieCrewMember(
         @ModelAttribute @Valid MovieCrewMemberRequest movieCrewMemberRequest) {
@@ -73,6 +75,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "400", description = "Invalid input data or object id"),
         @ApiResponse(responseCode = "404", description = "Movie crew member not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
     private ResponseEntity<MovieCrewMemberView> updateMovieCrewMember(@PathVariable ObjectId id,
         @ModelAttribute @Valid MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
@@ -85,6 +88,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "400", description = "Invalid object id"),
         @ApiResponse(responseCode = "404", description = "Movie crew member not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     private ResponseEntity<Void> deleteMovieCrewMember(@PathVariable ObjectId id) {
         movieCrewMemberService.delete(id);
