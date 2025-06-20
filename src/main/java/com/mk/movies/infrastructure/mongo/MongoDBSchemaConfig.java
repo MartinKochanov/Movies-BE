@@ -23,6 +23,8 @@ public class MongoDBSchemaConfig {
 
         applyMoviesSchema(database);
         applyMovieCrewMemberSchema(database);
+        applyRolesSchema(database);
+        applyUsersSchema(database);
 
         log.info("Schema validation applied to Movies and MovieCrewMembers collections");
     }
@@ -114,4 +116,63 @@ public class MongoDBSchemaConfig {
 
         log.info("Schema validation applied to MovieCrewMembers collection");
     }
+
+    private void applyRolesSchema(MongoDatabase database) {
+        Document rolesJsonSchema = new Document("$jsonSchema",
+            new Document("bsonType", "object")
+                .append("required", List.of("_id", "name", "castId"))
+                .append("properties", new Document()
+                    .append("_id", new Document("bsonType", "objectId")
+                        .append("description", "Must be a valid ObjectId"))
+                    .append("name", new Document("bsonType", "string")
+                        .append("minLength", 1)
+                        .append("description", "Role name is required and must not be blank"))
+                    .append("castId", new Document("bsonType", "objectId")
+                        .append("description", "User ID is required"))
+                    .append("movieId", new Document("bsonType", "objectId")
+                        .append("description", "Movie ID is optional"))
+                )
+        );
+
+        database.runCommand(new Document("collMod", "Roles")
+            .append("validator", rolesJsonSchema)
+            .append("validationLevel", "strict")
+        );
+
+        log.info("Schema validation applied to Roles collection");
+    }
+
+    private void applyUsersSchema(MongoDatabase database) {
+        Document usersJsonSchema = new Document("$jsonSchema",
+            new Document("bsonType", "object")
+                .append("required", List.of("_id", "firstName", "lastName", "email", "password"))
+                .append("properties", new Document()
+                    .append("_id", new Document("bsonType", "objectId")
+                        .append("description", "Must be a valid ObjectId"))
+                    .append("firstName", new Document("bsonType", "string")
+                        .append("minLength", 1)
+                        .append("description", "First name is required"))
+                    .append("lastName", new Document("bsonType", "string")
+                        .append("minLength", 1)
+                        .append("description", "Last name is required"))
+                    .append("email", new Document("bsonType", "string")
+                        .append("pattern", "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
+                        .append("description", "Email is required and must be valid"))
+                    .append("password", new Document("bsonType", "string")
+                        .append("minLength", 1)
+                        .append("description", "Password is required"))
+                    .append("imageUrl", new Document("bsonType", "string")
+                        .append("pattern", "^(http|https)://.*$")
+                        .append("description", "Image URL must be valid if present"))
+                )
+        );
+
+        database.runCommand(new Document("collMod", "Users")
+            .append("validator", usersJsonSchema)
+            .append("validationLevel", "strict")
+        );
+
+        log.info("Schema validation applied to Users collection");
+    }
+
 }
