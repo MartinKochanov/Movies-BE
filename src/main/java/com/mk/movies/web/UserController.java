@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,14 +72,15 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN') or @authorizationService.isAccountOwner(#id)")
-    @PatchMapping("/{id}")
     @Operation(summary = "Update user by ID", description = "Update an existing user by their ID. Support partial updates.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User updated"),
         @ApiResponse(responseCode = "400", description = "Invalid object ID or input data"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<UserView> update(@PathVariable ObjectId id, @RequestBody @Valid UserUpdateRequest userRequest) {
+    @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<UserView> update(@PathVariable ObjectId id,
+        @ModelAttribute @Valid UserUpdateRequest userRequest) {
         return ResponseEntity.ok(userService.updateUser(id, userRequest));
     }
 

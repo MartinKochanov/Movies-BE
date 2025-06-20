@@ -31,7 +31,9 @@ public interface UserMapper {
     @Mapping(target = "lastName", source = "user.lastName")
     @Mapping(target = "email", source = "user.email")
     @Mapping(target = "role", source = "user.role")
+    @Mapping(target = "imageUrl", source = "user.imageUrl")
     AuthenticatedUserView toAuthenticatedUserView(CustomUserDetails user);
 
+    @Mapping(target = "imageUrl", ignore = true)
     void updateDocument(UserUpdateRequest userRequest,@MappingTarget() User user);
 }

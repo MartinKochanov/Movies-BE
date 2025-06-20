@@ -37,6 +37,7 @@ public class SuperAdminInitializer {
                     "Super",
                     "Admin",
                     passwordEncoder.encode(superAdminPassword),
+                    "",
                     Role.SUPER_ADMIN
                 );
                 userRepository.save(superAdmin);

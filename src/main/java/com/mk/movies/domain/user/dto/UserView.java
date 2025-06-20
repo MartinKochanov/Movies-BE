@@ -5,6 +5,7 @@ public record UserView(
     String firstName,
     String lastName,
     String email,
+    String imageUrl,
     String role
 ) {
 

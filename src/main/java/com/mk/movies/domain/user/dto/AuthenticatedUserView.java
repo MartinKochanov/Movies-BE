@@ -7,6 +7,7 @@ public record AuthenticatedUserView(
     String email,
     String firstName,
     String lastName,
+    String imageUrl,
     Role role
 ) {
 
