@@ -14,7 +14,6 @@ import com.mk.movies.domain.movie.repository.MovieRepository;
 import com.mk.movies.domain.role.dto.RoleRequest;
 import com.mk.movies.domain.user.document.User;
 import com.mk.movies.domain.user.repository.UserRepository;
-import com.mk.movies.infrastructure.minio.MinioService;
 import com.mk.movies.util.JwtTestUtil;
 import java.util.List;
 import org.bson.types.ObjectId;
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +41,7 @@ class MovieControllerTest {
     private static MovieUpdateRequest movieUpdateRequest;
     private static RoleRequest roleRequest;
 
-//    @Mock
+    //    @Mock
 //    MinioService minioService;
     @Autowired
     private MockMvc mockMvc;
