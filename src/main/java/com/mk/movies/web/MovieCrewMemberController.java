@@ -42,7 +42,7 @@ public class MovieCrewMemberController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PostMapping(consumes = {"multipart/form-data"})
-    private ResponseEntity<MovieCrewMemberView> createMovieCrewMember(
+    public ResponseEntity<MovieCrewMemberView> createMovieCrewMember(
         @ModelAttribute @Valid MovieCrewMemberRequest movieCrewMemberRequest) {
         return ResponseEntity
             .status(CREATED)
@@ -54,7 +54,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "200", description = "Movie crew members retrieved"),
     })
     @GetMapping
-    private ResponseEntity<Page<MovieCrewMemberView>> getMovieCrewMember(Pageable pageable) {
+    public ResponseEntity<Page<MovieCrewMemberView>> getMovieCrewMember(Pageable pageable) {
         return ResponseEntity.ok().body(movieCrewMemberService.getAll(pageable));
     }
 
@@ -65,7 +65,7 @@ public class MovieCrewMemberController {
         @ApiResponse(responseCode = "404", description = "Movie crew member not found")
     })
     @GetMapping("/{id}")
-    private ResponseEntity<MovieCrewMemberView> getMovieCrewMemberById(@PathVariable ObjectId id) {
+    public ResponseEntity<MovieCrewMemberView> getMovieCrewMemberById(@PathVariable ObjectId id) {
         return ResponseEntity.ok().body(movieCrewMemberService.getById(id));
     }
 
@@ -77,7 +77,7 @@ public class MovieCrewMemberController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
-    private ResponseEntity<MovieCrewMemberView> updateMovieCrewMember(@PathVariable ObjectId id,
+    public ResponseEntity<MovieCrewMemberView> updateMovieCrewMember(@PathVariable ObjectId id,
         @ModelAttribute @Valid MovieCrewMemberUpdateRequest movieCrewMemberRequest) {
         return ResponseEntity.ok().body(movieCrewMemberService.update(id, movieCrewMemberRequest));
     }
@@ -90,7 +90,7 @@ public class MovieCrewMemberController {
     })
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> deleteMovieCrewMember(@PathVariable ObjectId id) {
+    public ResponseEntity<Void> deleteMovieCrewMember(@PathVariable ObjectId id) {
         movieCrewMemberService.delete(id);
         return ResponseEntity.status(NO_CONTENT).build();
     }

@@ -10,6 +10,9 @@ import com.mk.movies.domain.role.document.Role;
 import com.mk.movies.domain.role.dto.RoleUpdateRequest;
 import com.mk.movies.domain.role.dto.RoleView;
 import com.mk.movies.domain.role.repository.RoleRepository;
+import com.mk.movies.domain.user.document.User;
+import com.mk.movies.domain.user.repository.UserRepository;
+import com.mk.movies.util.JwtTestUtil;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,22 +29,29 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 class RoleControllerTest {
 
-    private static final String BASE_URL = "/roles";
+    private static final String BASE_URL = "/api/v1/roles";
     private static Role role;
     private static RoleView roleView;
     private static RoleUpdateRequest roleUpdateRequest;
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private JwtTestUtil jwtTestUtil;
+
+    private static User adminUser;
 
     @BeforeEach
     void setUp() {
+        adminUser = userRepository.findByEmail("superadmin@example.com")
+            .orElseThrow(() -> new RuntimeException("Admin user not found"));
+
         role = new Role();
         role.setId(new ObjectId());
         role.setName("Po2");
@@ -56,6 +66,7 @@ class RoleControllerTest {
     @Test
     void update_returns_ok_givenValidData() throws Exception {
         mockMvc.perform(patch(BASE_URL + "/" + role.getId())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(roleUpdateRequest)))
             .andExpect(status().isOk())
@@ -66,6 +77,7 @@ class RoleControllerTest {
     @Test
     void update_returns_not_found_givenNonExistentId() throws Exception {
         mockMvc.perform(patch(BASE_URL + "/" + new ObjectId().toHexString())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(roleUpdateRequest)))
             .andExpect(status().isNotFound());
@@ -74,6 +86,7 @@ class RoleControllerTest {
     @Test
     void update_returns_bad_request_givenInvalidId() throws Exception {
         mockMvc.perform(patch(BASE_URL + "/invalid-id")
+                .header("Authorization", jwtTestUtil.generateToken(adminUser))
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(roleUpdateRequest)))
             .andExpect(status().isBadRequest());
@@ -81,19 +94,22 @@ class RoleControllerTest {
 
     @Test
     void delete_returns_no_content_givenValidId() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/" + role.getId()))
+        mockMvc.perform(delete(BASE_URL + "/" + role.getId())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isNoContent());
     }
 
     @Test
     void delete_returns_not_found_givenNonExistentId() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/" + new ObjectId().toHexString()))
+        mockMvc.perform(delete(BASE_URL + "/" + new ObjectId().toHexString())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isNotFound());
     }
 
     @Test
     void delete_returns_bad_request_givenInvalidId() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/invalid-id"))
+        mockMvc.perform(delete(BASE_URL + "/invalid-id")
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isBadRequest());
     }
 }
