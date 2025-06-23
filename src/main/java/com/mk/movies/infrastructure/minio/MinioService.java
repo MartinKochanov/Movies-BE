@@ -3,6 +3,7 @@ package com.mk.movies.infrastructure.minio;
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_CREW_IMAGES_BUCKET;
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_POSTERS_BUCKET;
 import static com.mk.movies.infrastructure.minio.MinioConstants.MOVIE_TRAILERS_BUCKET;
+import static com.mk.movies.infrastructure.minio.MinioConstants.USER_PROFILE_PICTURE_BUCKET;
 import static com.mk.movies.infrastructure.minio.MinioUtil.getPublicReadPolicy;
 
 import com.mk.movies.infrastructure.exceptions.MinioInitializationException;
@@ -28,7 +29,8 @@ public class MinioService {
     private static final String[] BUCKETS = {
         MOVIE_POSTERS_BUCKET,
         MOVIE_TRAILERS_BUCKET,
-        MOVIE_CREW_IMAGES_BUCKET
+        MOVIE_CREW_IMAGES_BUCKET,
+        USER_PROFILE_PICTURE_BUCKET
     };
     private final MinioClient minioClient;
 

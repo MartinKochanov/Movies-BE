@@ -16,8 +16,10 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User", description = "API for managing users")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
@@ -50,6 +52,7 @@ public class UserController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Users retrieved"),
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserView>> getAll(Pageable pageable) {
         return ResponseEntity.ok(userService.getUsers(pageable));
@@ -61,19 +64,23 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "Invalid object ID"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN') or @authorizationService.isAccountOwner(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<UserView> getById(@PathVariable ObjectId id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN') or @authorizationService.isAccountOwner(#id)")
     @Operation(summary = "Update user by ID", description = "Update an existing user by their ID. Support partial updates.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User updated"),
         @ApiResponse(responseCode = "400", description = "Invalid object ID or input data"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<UserView> update(@PathVariable ObjectId id, @RequestBody @Valid UserUpdateRequest userRequest) {
+    @PatchMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<UserView> update(@PathVariable ObjectId id,
+        @ModelAttribute @Valid UserUpdateRequest userRequest) {
         return ResponseEntity.ok(userService.updateUser(id, userRequest));
     }
 
@@ -83,6 +90,7 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "Invalid object ID or input data"),
         @ApiResponse(responseCode = "404", description = "User not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN') or @authorizationService.isAccountOwner(#id)")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable ObjectId id) {
         userService.deleteUser(id);

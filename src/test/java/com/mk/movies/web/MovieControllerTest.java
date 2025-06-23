@@ -12,7 +12,10 @@ import com.mk.movies.domain.movie.dto.MovieUpdateRequest;
 import com.mk.movies.domain.movie.enums.Genre;
 import com.mk.movies.domain.movie.repository.MovieRepository;
 import com.mk.movies.domain.role.dto.RoleRequest;
+import com.mk.movies.domain.user.document.User;
+import com.mk.movies.domain.user.repository.UserRepository;
 import com.mk.movies.infrastructure.minio.MinioService;
+import com.mk.movies.util.JwtTestUtil;
 import java.util.List;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,21 +37,30 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 class MovieControllerTest {
 
-    private static final String BASE_URL = "/movies";
+    private static final String BASE_URL = "/api/v1/movies";
     private static Movie movie;
     private static MovieRequest movieRequest;
     private static MovieUpdateRequest movieUpdateRequest;
     private static RoleRequest roleRequest;
 
     @Mock
-    MinioService minioService;
+    private MinioService minioService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private JwtTestUtil jwtTestUtil;
+
+    private static User adminUser;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
+        adminUser = userRepository.findByEmail("superadmin@example.com")
+            .orElseThrow(() -> new RuntimeException("Admin user not found"));
+
         roleRequest = new RoleRequest(
             "Role",
             new ObjectId(),
@@ -131,13 +143,15 @@ class MovieControllerTest {
                 .param("producersIds", String.valueOf(movieRequest.producersIds().get(0)))
                 .param("writersIds", String.valueOf(movieRequest.writersIds().get(0)))
                 .param("roles[0].name", roleRequest.name())
-                .param("roles[0].castId", roleRequest.castId().toHexString()))
+                .param("roles[0].castId", roleRequest.castId().toHexString())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isCreated());
     }
 
     @Test
     void create_returns_bad_request_givenNoData() throws Exception {
-        mockMvc.perform(multipart(BASE_URL))
+        mockMvc.perform(multipart(BASE_URL)
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isBadRequest());
     }
 
@@ -191,7 +205,7 @@ class MovieControllerTest {
             new byte[0]);
         MockMultipartFile trailerFile = new MockMultipartFile("trailerUrl", trailerUrl, "video/mp4",
             new byte[0]);
-        mockMvc.perform(multipart("/movies")
+        mockMvc.perform(multipart(BASE_URL)
                 .file("imageUrl", imageFile.getBytes())
                 .file("trailerUrl", trailerFile.getBytes())
                 .param("title", title)
@@ -206,13 +220,15 @@ class MovieControllerTest {
                 .param("castIds", castIds)
                 .param("directedByIds", directedByIds)
                 .param("producersIds", producersIds)
-                .param("writersIds", writersIds))
+                .param("writersIds", writersIds)
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void getAllMovies_returns_ok() throws Exception {
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL)
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.content").isArray())
             .andExpect(jsonPath("$.content[0].title").value(movie.getTitle()))
@@ -225,7 +241,8 @@ class MovieControllerTest {
 
     @Test
     void getMovieById_returns_ok_givenValidId() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/" + movie.getId()))
+        mockMvc.perform(get(BASE_URL + "/" + movie.getId())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.title").value(movie.getTitle()))
             .andExpect(jsonPath("$.duration").value(movie.getDuration()))
@@ -241,13 +258,15 @@ class MovieControllerTest {
 
     @Test
     void getMovieById_returns_not_found_givenNonExistentId() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/" + new ObjectId().toHexString()))
+        mockMvc.perform(get(BASE_URL + "/" + new ObjectId().toHexString())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isNotFound());
     }
 
     @Test
     void getMovieById_returns_bad_request_givenInvalidId() throws Exception {
-        mockMvc.perform(get(BASE_URL + "/invalid-id"))
+        mockMvc.perform(get(BASE_URL + "/invalid-id")
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isBadRequest());
     }
 
@@ -271,7 +290,8 @@ class MovieControllerTest {
                 .with(request -> {
                     request.setMethod("PATCH");
                     return request;
-                }))
+                })
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isOk());
     }
 
@@ -330,7 +350,8 @@ class MovieControllerTest {
                 .with(request -> {
                     request.setMethod("PATCH");
                     return request;
-                }))
+                })
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isBadRequest());
     }
 
@@ -354,7 +375,8 @@ class MovieControllerTest {
                 .with(request -> {
                     request.setMethod("PATCH");
                     return request;
-                }))
+                })
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isNotFound());
     }
 
@@ -378,25 +400,29 @@ class MovieControllerTest {
                 .with(request -> {
                     request.setMethod("PATCH");
                     return request;
-                }))
+                })
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     void deleteMovie_returns_no_content_givenValidId() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/" + movie.getId()))
+        mockMvc.perform(delete(BASE_URL + "/" + movie.getId())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isNoContent());
     }
 
     @Test
     void deleteMovie_returns_not_found_givenNonExistentId() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/" + new ObjectId().toHexString()))
+        mockMvc.perform(delete(BASE_URL + "/" + new ObjectId().toHexString())
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isNotFound());
     }
 
     @Test
     void deleteMovie_returns_bad_request_givenInvalidId() throws Exception {
-        mockMvc.perform(delete(BASE_URL + "/invalid-id"))
+        mockMvc.perform(delete(BASE_URL + "/invalid-id")
+                .header("Authorization", jwtTestUtil.generateToken(adminUser)))
             .andExpect(status().isBadRequest());
     }
 }

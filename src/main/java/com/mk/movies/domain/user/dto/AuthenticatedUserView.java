@@ -1,12 +1,14 @@
 package com.mk.movies.domain.user.dto;
 
-public record UserView(
+import com.mk.movies.domain.user.enums.Role;
+
+public record AuthenticatedUserView(
     String id,
+    String email,
     String firstName,
     String lastName,
-    String email,
     String imageUrl,
-    String role
+    Role role
 ) {
 
 }

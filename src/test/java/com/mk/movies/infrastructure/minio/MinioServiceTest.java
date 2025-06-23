@@ -44,8 +44,8 @@ class MinioServiceTest {
 
         minioService.initializeBuckets();
 
-        verify(minioClient, times(3)).makeBucket(any(MakeBucketArgs.class));
-        verify(minioClient, times(3)).setBucketPolicy(any(SetBucketPolicyArgs.class));
+        verify(minioClient, times(4)).makeBucket(any(MakeBucketArgs.class));
+        verify(minioClient, times(4)).setBucketPolicy(any(SetBucketPolicyArgs.class));
     }
 
     @Test

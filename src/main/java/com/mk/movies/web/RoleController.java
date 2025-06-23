@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Roles", description = "API for managing roles")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/roles")
+@RequestMapping("/api/v1/roles")
 public class RoleController {
 
     private final RoleService roleService;
@@ -33,6 +34,7 @@ public class RoleController {
         @ApiResponse(responseCode = "400", description = "Invalid object ID"),
         @ApiResponse(responseCode = "404", description = "Role not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<RoleView> update(@PathVariable ObjectId id,
         @RequestBody RoleUpdateRequest roleRequest) {
@@ -45,6 +47,7 @@ public class RoleController {
         @ApiResponse(responseCode = "400", description = "Invalid object ID"),
         @ApiResponse(responseCode = "404", description = "Role not found")
     })
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable ObjectId id) {
         roleService.deleteRole(id);
