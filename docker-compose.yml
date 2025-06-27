@@ -26,6 +26,9 @@ services:
             - MINIO_URL=${MINIO_URL}
             - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
             - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+            - JWT_SECRET=${JWT_SECRET}
+            - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
+            - SUPER_ADMIN_PASSWORD=${SUPER_ADMIN_PASSWORD}
         depends_on:
             - minio
 

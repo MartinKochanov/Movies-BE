@@ -57,6 +57,7 @@ public class SecurityConfig {
                 authRequests
                     .requestMatchers(WHITE_LIST).permitAll()
                     .requestMatchers(HttpMethod.POST,"/api/v1/auth", "/api/v1/users").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/movies/**").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(session ->
